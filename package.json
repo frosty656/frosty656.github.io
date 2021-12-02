@@ -1,0 +1,37 @@
+{
+  "name": "expo-gh-pages",
+  "version": "1.1.2",
+  "homepage": "https://zephyrplace.github.io/expo-gh-pages",
+  "keywords": [
+    "expo",
+    "react-native",
+    "gh-pages",
+    "git",
+    "github"
+  ],
+  "author": {
+    "name": "tiago-marques",
+    "url": "https://tiagomarques.com.br/"
+  },
+  "license": "MIT",
+  "scripts": {
+    "start": "node bin/expo-gh-pages.js"
+  },
+  "bin": {
+    "expo-gh-pages": "bin/expo-gh-pages.js"
+  },
+  "description": "Hosting An App from Expo on Github Pages",
+  "main": "bin/expo-gh-pages.js",
+  "repository": "git@github.com:zephyrplace/expo-gh-pages.git",
+  "private": false,
+  "dependencies": {
+    "chalk": "^3.0.0",
+    "gh-pages": "^2.2.0",
+    "node-run-cmd": "^1.0.1",
+    "progress": "^2.0.3",
+    "qrcode": "^1.4.4"
+  },
+  "devDependencies": {
+    "standard": "^14.3.1"
+  }
+}
