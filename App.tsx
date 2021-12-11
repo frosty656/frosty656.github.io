@@ -9,6 +9,43 @@ export default function App() {
   const [amount, setAmount] = useState(50);
   const [ingredients, setIngredients] = useState([{}]);
 
+  const [workshopLevel, setWorkShopLevel] = useState(4);
+  const [furnaceLevel, setFurnaceLevel] = useState(4);
+  const [machineShopLevel, setMachineShopLevel] = useState(4);
+  const [industrialFactoryLevel, setIndustrialFactoryLevel] = useState(4);
+  const [forgeLevel, setForgeLevel] = useState(4);
+  const [manufacturerLevel, setManufacturerLevel] = useState(2);
+
+  function getBuildingLevel(name: string) {
+    switch (name.toLowerCase()) {
+      case "workshop":
+        return workshopLevel;
+      case "furnace":
+        return furnaceLevel;
+      case "machineshop":
+        return machineShopLevel;
+      case "industrialfactory":
+        return industrialFactoryLevel;
+      case "forge":
+        return forgeLevel;
+      case "manufacturer":
+        return manufacturerLevel;
+    }
+  }
+
+  function levelMultiplier(level: number) {
+    switch (level) {
+      case 1:
+        return 1;
+      case 2:
+        return 1.5;
+      case 3:
+        return 2;
+      case 4:
+        return 3;
+    }
+  }
+
   function helloWorld(name: string, amountPerMin = 1, depth = 1) {
     const itemInfo = allItems.find((item) => {
       return item.name == name;
@@ -29,7 +66,8 @@ export default function App() {
           return item.name == ingredient.name;
         });
 
-        const buildingLevelMultiplier = buildingLevels[ingInfo!.building];
+        const buildingLevel = getBuildingLevel(ingInfo!.building);
+        const multiplier = levelMultiplier(!buildingLevel);
       }
     });
   }
