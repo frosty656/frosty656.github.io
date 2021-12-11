@@ -12,22 +12,55 @@ export default function App() {
     building: string;
   }
 
+  interface Resources {
+    CopperOre: number;
+    IronOre: number;
+    WoodLog: number;
+    Stone: number;
+    Coal: number;
+    Wolframite: number;
+  }
+
   const [currentItem, setCurrentItem] = useState("Wood Plank");
   const [amount, setAmount] = useState(50);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [workshopLevel, setWorkShopLevel] = useState(4);
-  const [furnaceLevel, setFurnaceLevel] = useState(4);
-  const [machineShopLevel, setMachineShopLevel] = useState(4);
-  const [industrialFactoryLevel, setIndustrialFactoryLevel] = useState(4);
-  const [forgeLevel, setForgeLevel] = useState(4);
-  const [manufacturerLevel, setManufacturerLevel] = useState(2);
-  const [extractorLevel, etExtractorLevel] = useState(4);
+  const [workshopLevel, setWorkShopLevel] = useState(1);
+  const [furnaceLevel, setFurnaceLevel] = useState(1);
+  const [machineShopLevel, setMachineShopLevel] = useState(1);
+  const [industrialFactoryLevel, setIndustrialFactoryLevel] = useState(1);
+  const [forgeLevel, setForgeLevel] = useState(1);
+  const [manufacturerLevel, setManufacturerLevel] = useState(1);
+  const [extractorLevel, setExtractorLevel] = useState(1);
+  const [rawResources, setRawResources] = useState<Resources>({
+    CopperOre: 0,
+    IronOre: 0,
+    WoodLog: 0,
+    Stone: 0,
+    Coal: 0,
+    Wolframite: 0,
+  });
 
   var ingList: Ingredient[] = [];
+  var rawRes: Resources = {
+    CopperOre: 0,
+    IronOre: 0,
+    WoodLog: 0,
+    Stone: 0,
+    Coal: 0,
+    Wolframite: 0,
+  };
 
   // If any params are updated then we want to recalculate the list
   useEffect(() => {
     ingList = [];
+    rawRes = {
+      CopperOre: 0,
+      IronOre: 0,
+      WoodLog: 0,
+      Stone: 0,
+      Coal: 0,
+      Wolframite: 0,
+    };
 
     const ingInfo = allItems.find((item) => {
       return item.name == currentItem;
@@ -41,6 +74,7 @@ export default function App() {
     addIng(currentItem, amount, 0, numberOfBuildings, building);
     GenerateList(currentItem, amount);
     setIngredients(ingList);
+    setRawResources(rawRes);
   }, [
     workshopLevel,
     furnaceLevel,
@@ -57,6 +91,30 @@ export default function App() {
       return;
     }
   }, [ingList]);
+
+  function addRawResource(amount: number, resource: string) {
+    console.log(resource);
+    switch (resource.toLocaleLowerCase()) {
+      case "copper ore":
+        rawRes.CopperOre += amount;
+        break;
+      case "iron ore":
+        rawRes.IronOre += amount;
+        break;
+      case "wood log":
+        rawRes.WoodLog += amount;
+        break;
+      case "stone":
+        rawRes.Stone += amount;
+        break;
+      case "coal":
+        rawRes.Coal += amount;
+        break;
+      case "wolframite":
+        rawRes.Wolframite += amount;
+        break;
+    }
+  }
 
   const addIng = (
     name: string,
@@ -117,7 +175,11 @@ export default function App() {
       const requireAmountPerMin = ingredient.amount * amountPerMin;
       const buildingLevel = getBuildingLevel("extractor");
       const multiplier = levelMultiplier(buildingLevel!);
-      const numberOfBuildings = Math.ceil(amount / (7.5 * multiplier));
+      const numberOfBuildings = Math.ceil(
+        requireAmountPerMin / (7.5 * multiplier)
+      );
+      console.log(numberOfBuildings);
+      addRawResource(requireAmountPerMin, ingredient.name);
       if (resources.includes(ingredient.name)) {
         addIng(
           ingredient.name,
@@ -130,7 +192,6 @@ export default function App() {
         const ingInfo = allItems.find((item) => {
           return item.name == ingredient.name;
         });
-
         const buildingLevel = getBuildingLevel(ingInfo!.building);
         const multiplier = levelMultiplier(buildingLevel!);
         const numberOfBuildings =
@@ -142,7 +203,6 @@ export default function App() {
           numberOfBuildings,
           ingInfo!.building
         );
-
         GenerateList(ingredient.name, requireAmountPerMin, depth + 1);
       }
     });
@@ -150,7 +210,85 @@ export default function App() {
 
   return (
     <View style={{ alignItems: "center" }}>
+      <View style={{ flexDirection: "row", alignItems: "center", padding: 5 }}>
+        <Text style={styles.buildingLevel}>Extractor Level:</Text>
+        <TextInput
+          style={styles.buildingLevelInput}
+          keyboardType="numeric"
+          onChangeText={(input) => {
+            setExtractorLevel(Number(input.replace(/[^1-4]/g, "")));
+          }}
+          value={extractorLevel.toString()}
+        />
+        <Text style={styles.buildingLevel}>Workshop Level:</Text>
+        <TextInput
+          style={styles.buildingLevelInput}
+          keyboardType="numeric"
+          onChangeText={(input) => {
+            setWorkShopLevel(Number(input.replace(/[^1-4]/g, "")));
+          }}
+          value={workshopLevel.toString()}
+        />
+        <Text style={styles.buildingLevel}>Furnace Level:</Text>
+        <TextInput
+          style={styles.buildingLevelInput}
+          keyboardType="numeric"
+          onChangeText={(input) => {
+            setFurnaceLevel(Number(input.replace(/[^1-4]/g, "")));
+          }}
+          value={furnaceLevel.toString()}
+        />
+      </View>
+      <View style={{ flexDirection: "row", alignItems: "center", padding: 5 }}>
+        <Text style={styles.buildingLevel}>Machine Shop Level:</Text>
+        <TextInput
+          style={styles.buildingLevelInput}
+          keyboardType="numeric"
+          onChangeText={(input) => {
+            setMachineShopLevel(Number(input.replace(/[^1-4]/g, "")));
+          }}
+          value={machineShopLevel.toString()}
+        />
+        <Text style={styles.buildingLevel}>Industrial Factory Level:</Text>
+        <TextInput
+          style={styles.buildingLevelInput}
+          keyboardType="numeric"
+          onChangeText={(input) => {
+            setIndustrialFactoryLevel(Number(input.replace(/[^1-4]/g, "")));
+          }}
+          value={industrialFactoryLevel.toString()}
+        />
+        <Text style={styles.buildingLevel}>Forge Level:</Text>
+        <TextInput
+          style={styles.buildingLevelInput}
+          keyboardType="numeric"
+          onChangeText={(input) => {
+            setForgeLevel(Number(input.replace(/[^1-4]/g, "")));
+          }}
+          value={forgeLevel.toString()}
+        />
+      </View>
+      <View style={{ flexDirection: "row", alignItems: "center", padding: 5 }}>
+        <Text style={styles.buildingLevel}>Manufacturer Level:</Text>
+        <TextInput
+          style={styles.buildingLevelInput}
+          keyboardType="numeric"
+          onChangeText={(input) => {
+            setManufacturerLevel(Number(input.replace(/[^1-4]/g, "")));
+          }}
+          value={manufacturerLevel.toString()}
+        />
+      </View>
       <View style={{ alignItems: "center" }}>
+        <View>
+          <Text>Wood Log: {rawResources.WoodLog}</Text>
+          <Text>Stone: {rawResources.Stone}</Text>
+          <Text>Copper Ore: {rawResources.CopperOre}</Text>
+          <Text>Iron Ore: {rawResources.IronOre}</Text>
+          <Text>Coal: {rawResources.Coal}</Text>
+          <Text>Wolframite: {rawResources.Wolframite}</Text>
+        </View>
+
         <View
           style={{ flexDirection: "row", alignItems: "center", padding: 5 }}
         >
@@ -175,7 +313,7 @@ export default function App() {
           <Picker
             style={{
               marginVertical: 30,
-              width: 300,
+              width: 100,
               padding: 10,
               borderWidth: 1,
               borderColor: "#666",
@@ -213,6 +351,7 @@ export default function App() {
           );
         })}
       </View>
+      <View style={{ height: 50 }} />
     </View>
   );
 }
@@ -225,5 +364,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+    paddingBottom: 30,
+  },
+  buildingLevel: {
+    paddingLeft: 15,
+    paddingRight: 2,
+  },
+  buildingLevelInput: {
+    width: 30,
+    padding: 5,
+    borderColor: "black",
+    borderRadius: 5,
+    borderWidth: 1,
+    height: 30,
   },
 });
