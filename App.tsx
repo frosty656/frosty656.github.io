@@ -1,24 +1,38 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Slider from "@react-native-community/slider";
-import { allItems } from "./ItemInfo";
+import { allItems, resources } from "./ItemInfo";
 import { Picker } from "@react-native-picker/picker";
-
-interface Ingredient {
-  name: string;
-  amount: number;
-}
-interface Item {
-  name: string;
-  itemsPerMin: number;
-  ingredientList: Ingredient[];
-  building: string;
-  value: number;
-}
 
 export default function App() {
   const [currentItem, setCurrentItem] = useState("Wood Plank");
   const [amount, setAmount] = useState(50);
+  const [ingredients, setIngredients] = useState([{}]);
+
+  function helloWorld(name: string, amountPerMin = 1, depth = 1) {
+    const itemInfo = allItems.find((item) => {
+      return item.name == name;
+    });
+
+    itemInfo?.ingredientList.forEach((ingredient) => {
+      if (resources.includes(ingredient.name)) {
+        setIngredients([
+          ...ingredients,
+          {
+            name: ingredient.name,
+            amount: ingredient.amount * amountPerMin,
+            depth: depth,
+          },
+        ]);
+      } else {
+        const ingInfo = allItems.find((item) => {
+          return item.name == ingredient.name;
+        });
+
+        const buildingLevelMultiplier = buildingLevels[ingInfo!.building];
+      }
+    });
+  }
 
   return (
     <View style={{ alignItems: "center" }}>

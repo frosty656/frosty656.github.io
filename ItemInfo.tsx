@@ -1,4 +1,13 @@
-export const allItem = [
+export const resources = [
+  "Copper Ore",
+  "Iron Ore",
+  "Wood Log",
+  "Stone",
+  "Coal",
+  "Wolframite",
+];
+
+export const allItems = [
   {
     name: "Wood Plank",
     itemsPerMin: 15,
