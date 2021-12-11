@@ -214,6 +214,7 @@ export default function App() {
         <Text style={styles.buildingLevel}>Extractor Level:</Text>
         <TextInput
           style={styles.buildingLevelInput}
+          maxLength={1}
           keyboardType="numeric"
           onChangeText={(input) => {
             setExtractorLevel(Number(input.replace(/[^1-4]/g, "")));
@@ -223,6 +224,7 @@ export default function App() {
         <Text style={styles.buildingLevel}>Workshop Level:</Text>
         <TextInput
           style={styles.buildingLevelInput}
+          maxLength={1}
           keyboardType="numeric"
           onChangeText={(input) => {
             setWorkShopLevel(Number(input.replace(/[^1-4]/g, "")));
@@ -232,6 +234,7 @@ export default function App() {
         <Text style={styles.buildingLevel}>Furnace Level:</Text>
         <TextInput
           style={styles.buildingLevelInput}
+          maxLength={1}
           keyboardType="numeric"
           onChangeText={(input) => {
             setFurnaceLevel(Number(input.replace(/[^1-4]/g, "")));
@@ -243,6 +246,7 @@ export default function App() {
         <Text style={styles.buildingLevel}>Machine Shop Level:</Text>
         <TextInput
           style={styles.buildingLevelInput}
+          maxLength={1}
           keyboardType="numeric"
           onChangeText={(input) => {
             setMachineShopLevel(Number(input.replace(/[^1-4]/g, "")));
@@ -252,6 +256,7 @@ export default function App() {
         <Text style={styles.buildingLevel}>Industrial Factory Level:</Text>
         <TextInput
           style={styles.buildingLevelInput}
+          maxLength={1}
           keyboardType="numeric"
           onChangeText={(input) => {
             setIndustrialFactoryLevel(Number(input.replace(/[^1-4]/g, "")));
@@ -261,6 +266,7 @@ export default function App() {
         <Text style={styles.buildingLevel}>Forge Level:</Text>
         <TextInput
           style={styles.buildingLevelInput}
+          maxLength={1}
           keyboardType="numeric"
           onChangeText={(input) => {
             setForgeLevel(Number(input.replace(/[^1-4]/g, "")));
@@ -272,6 +278,7 @@ export default function App() {
         <Text style={styles.buildingLevel}>Manufacturer Level:</Text>
         <TextInput
           style={styles.buildingLevelInput}
+          maxLength={1}
           keyboardType="numeric"
           onChangeText={(input) => {
             setManufacturerLevel(Number(input.replace(/[^1-4]/g, "")));
