@@ -148,6 +148,8 @@ export default function App() {
         return manufacturerLevel;
       case "extractor":
         return extractorLevel;
+      case "Earth Transporter":
+        return 1;
     }
   }
 
@@ -304,7 +306,7 @@ export default function App() {
             }}
             keyboardType="numeric"
             onChangeText={(input) => {
-              setAmount(Number(input.replace(/[^0-9]/g, "")));
+              setAmount(Number(input.replace(/[^0-9]./g, "")));
             }}
             value={amount.toString()}
           />
@@ -312,7 +314,6 @@ export default function App() {
 
           <Picker
             style={{
-              marginVertical: 30,
               width: 100,
               padding: 10,
               borderWidth: 1,
@@ -334,10 +335,6 @@ export default function App() {
           </Picker>
         </View>
       </View>
-      <Text>
-        We want {amount} {currentItem} a minute
-      </Text>
-      <Text>------------------------</Text>
       <View style={{ alignItems: "flex-start" }}>
         {ingredients.map((data) => {
           if (data.amount == 0) {

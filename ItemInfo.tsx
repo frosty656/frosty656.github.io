@@ -294,14 +294,14 @@ export const allItems = [
   {
     name: "Earth Token",
     itemsPerMin: 1.428571429,
-    building: "Manufacturer", // TODO
+    building: "Earth Transporter",
     value: 250,
     ingredientList: [{ name: "Matter Duplicator", amount: 1 }],
   },
   {
     name: "Energy Cube",
     itemsPerMin: 2,
-    building: "Manufacturer", // TODO
+    building: "Machine Shop",
     value: 250,
     ingredientList: [
       { name: "Battery", amount: 2 },
@@ -311,7 +311,7 @@ export const allItems = [
   {
     name: "Gyroscope",
     itemsPerMin: 5,
-    building: "Manufacturer", // TODO
+    building: "Machine Shop",
     value: 250,
     ingredientList: [
       { name: "Copper Wire", amount: 12 },
@@ -367,7 +367,7 @@ export const allItems = [
   },
   {
     name: "Particle Glue",
-    itemsPerMin: 5,
+    itemsPerMin: 20,
     building: "Manufacturer",
     value: 250,
     ingredientList: [
@@ -380,7 +380,7 @@ export const allItems = [
   {
     name: "Quantum Entangler",
     itemsPerMin: 1,
-    building: "Manufacturer", // TODO
+    building: "Machine Shop",
     value: 250,
     ingredientList: [
       { name: "Magnetic Field Generator", amount: 1 },
