@@ -22,7 +22,7 @@ export default function App() {
   }
 
   const [currentItem, setCurrentItem] = useState("Wood Plank");
-  const [amount, setAmount] = useState(50);
+  const [amount, setAmount] = useState(1);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [workshopLevel, setWorkShopLevel] = useState(1);
   const [furnaceLevel, setFurnaceLevel] = useState(1);
