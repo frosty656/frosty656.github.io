@@ -27,7 +27,7 @@ export const allItems = [
     itemsPerMin: 30,
     building: "Workshop",
     value: 2,
-    ingredientList: [{ name: "Copper Ingot", amount: 3 }],
+    ingredientList: [{ name: "Copper Ingot", amount: 1.5 }],
   },
   {
     name: "Heat Sink",
@@ -48,7 +48,7 @@ export const allItems = [
     itemsPerMin: 20,
     building: "Workshop",
     value: 2,
-    ingredientList: [{ name: "Iron Ingot", amount: 4 }],
+    ingredientList: [{ name: "Iron Ingot", amount: 2 }],
   },
   {
     name: "Steel Rod",
