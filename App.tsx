@@ -82,6 +82,7 @@ export default function App() {
     industrialFactoryLevel,
     forgeLevel,
     manufacturerLevel,
+    extractorLevel,
     amount,
     currentItem,
   ]);
@@ -180,7 +181,7 @@ export default function App() {
       const numberOfBuildings = Math.ceil(
         requireAmountPerMin / (7.5 * multiplier)
       );
-      console.log(numberOfBuildings);
+      console.log(multiplier);
       addRawResource(requireAmountPerMin, ingredient.name);
       if (resources.includes(ingredient.name)) {
         addIng(
