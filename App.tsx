@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { allItems, resources } from "./ItemInfo";
 import { Picker } from "@react-native-picker/picker";
 
@@ -17,7 +17,7 @@ export default function App() {
     Amount: number,
     Building: string
   }
-
+  const [treeView, setTreeView] = useState(true);
   const [currentItem, setCurrentItem] = useState("Wood Plank");
   const [amount, setAmount] = useState(1);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -335,9 +335,24 @@ export default function App() {
           </Picker>
         </View>
       </View>
-      {renderIngList() } 
-      {//renderList()
-      }
+
+      <View style={{flexDirection: 'row', width: 500, alignSelf: 'center', justifyContent: 'center'}}>
+        <TouchableOpacity 
+          style={{ height: 50, width: '25%', borderColor: 'black', borderRadius: 5, borderWidth: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: treeView ? '#D3D3D3' : 'white'}}
+          onPress={()=>{setTreeView(true)}}
+
+        >
+          <Text style={{padding: 5}}>Tree View</Text>
+        </TouchableOpacity>
+        <View style={{width: 5}}/>
+        <TouchableOpacity 
+          style={{ height: 50, width: '25%', borderColor: 'black', borderRadius: 5, borderWidth: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: !treeView ? '#D3D3D3' : 'white'}}
+              onPress={()=>{setTreeView(false)}}
+        >
+          <Text style={{padding: 5}}>Summary View</Text>
+        </TouchableOpacity>
+      </View>
+      {treeView? renderList() : renderIngList() } 
       <View style={{ height: 50 }} />
     </View>
   );
