@@ -15,7 +15,7 @@ export default function App() {
   interface Resources {
     Name: string,
     Amount: number,
-    Building: string
+    Building: string,
   }
   const [treeView, setTreeView] = useState(true);
   const [currentItem, setCurrentItem] = useState("Wood Plank");
@@ -94,10 +94,6 @@ export default function App() {
       })
     }
 
-    const ingInfo = allItems.find((item) => {
-      return item.name == name;
-    });
-    // Add to the tree list
     ingList.push({
       name: name,
       amount: amount,
@@ -202,14 +198,29 @@ export default function App() {
   }
 
   function renderIngList(){
-    console.log(rawResources)
+    // TODO: This should be cleaned up
     return(
       <View style={{alignItems: 'flex-start'}}>
         {
           rawResources.map((data)=>{
+            var itemsPerMin = 0;
+            if (resources.includes(data.Name)) {
+              const buildingLevel = getBuildingLevel("extractor");
+              const multiplier = levelMultiplier(buildingLevel!);
+              itemsPerMin =  (7.5 * multiplier)
+            } else {
+              const ingInfo = allItems.find((item) => {
+                return item.name == data.Name;
+              });
+              itemsPerMin = ingInfo!.itemsPerMin
+            }
+            
+            const buildingLevel = getBuildingLevel(data.Building);
+            const multiplier = levelMultiplier(buildingLevel!);
+            const numberOfBuildings = data.Amount / itemsPerMin / multiplier;
             return(
               <Text>
-                {data.Name}: {data.Amount}
+                {data.Name}: {data.Amount} ({Math.ceil(numberOfBuildings)} {data.Building})
               </Text>
             )
           })
