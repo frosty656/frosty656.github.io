@@ -13,12 +13,9 @@ export default function App() {
   }
 
   interface Resources {
-    CopperOre: number;
-    IronOre: number;
-    WoodLog: number;
-    Stone: number;
-    Coal: number;
-    Wolframite: number;
+    Name: string,
+    Amount: number,
+    Building: string
   }
 
   const [currentItem, setCurrentItem] = useState("Wood Plank");
@@ -31,36 +28,15 @@ export default function App() {
   const [forgeLevel, setForgeLevel] = useState(1);
   const [manufacturerLevel, setManufacturerLevel] = useState(1);
   const [extractorLevel, setExtractorLevel] = useState(1);
-  const [rawResources, setRawResources] = useState<Resources>({
-    CopperOre: 0,
-    IronOre: 0,
-    WoodLog: 0,
-    Stone: 0,
-    Coal: 0,
-    Wolframite: 0,
-  });
+  const [rawResources, setRawResources] = useState<Resources[]>([]);
 
   var ingList: Ingredient[] = [];
-  var rawRes: Resources = {
-    CopperOre: 0,
-    IronOre: 0,
-    WoodLog: 0,
-    Stone: 0,
-    Coal: 0,
-    Wolframite: 0,
-  };
+  var resourceCount: Resources[] = [];
 
   // If any params are updated then we want to recalculate the list
   useEffect(() => {
     ingList = [];
-    rawRes = {
-      CopperOre: 0,
-      IronOre: 0,
-      WoodLog: 0,
-      Stone: 0,
-      Coal: 0,
-      Wolframite: 0,
-    };
+    resourceCount = []
 
     const ingInfo = allItems.find((item) => {
       return item.name == currentItem;
@@ -74,7 +50,7 @@ export default function App() {
     addIng(currentItem, amount, 0, numberOfBuildings, building);
     GenerateList(currentItem, amount);
     setIngredients(ingList);
-    setRawResources(rawRes);
+    setRawResources(resourceCount);
   }, [
     workshopLevel,
     furnaceLevel,
@@ -93,29 +69,6 @@ export default function App() {
     }
   }, [ingList]);
 
-  function addRawResource(amount: number, resource: string) {
-    console.log(resource);
-    switch (resource.toLocaleLowerCase()) {
-      case "copper ore":
-        rawRes.CopperOre += amount;
-        break;
-      case "iron ore":
-        rawRes.IronOre += amount;
-        break;
-      case "wood log":
-        rawRes.WoodLog += amount;
-        break;
-      case "stone":
-        rawRes.Stone += amount;
-        break;
-      case "coal":
-        rawRes.Coal += amount;
-        break;
-      case "wolframite":
-        rawRes.Wolframite += amount;
-        break;
-    }
-  }
 
   const addIng = (
     name: string,
@@ -124,6 +77,27 @@ export default function App() {
     numberOfBuildings: number,
     building: string
   ) => {
+    // Add to the sum list
+    var itemInArray = false;
+    resourceCount.forEach(element => {
+      if(element.Name == name){
+        element.Amount += amount
+        itemInArray = true
+      }
+    });
+
+    if(!itemInArray){
+      resourceCount.push({
+        Name: name,
+        Amount: amount,
+        Building: building
+      })
+    }
+
+    const ingInfo = allItems.find((item) => {
+      return item.name == name;
+    });
+    // Add to the tree list
     ingList.push({
       name: name,
       amount: amount,
@@ -181,8 +155,6 @@ export default function App() {
       const numberOfBuildings = Math.ceil(
         requireAmountPerMin / (7.5 * multiplier)
       );
-      console.log(multiplier);
-      addRawResource(requireAmountPerMin, ingredient.name);
       if (resources.includes(ingredient.name)) {
         addIng(
           ingredient.name,
@@ -209,6 +181,41 @@ export default function App() {
         GenerateList(ingredient.name, requireAmountPerMin, depth + 1);
       }
     });
+  }
+
+  function renderList(){
+    return (
+      <View style={{ alignItems: "flex-start" }}>
+        {ingredients.map((data) => {
+          if (data.amount == 0) {
+            return null;
+          }
+          return (
+            <Text style={{ paddingLeft: data.depth * 10 }}>
+              {data.amount} {data.name} ({data.numberOfBuildings}{" "}
+              {data.building})
+            </Text>
+          );
+        })}
+      </View>
+    )
+  }
+
+  function renderIngList(){
+    console.log(rawResources)
+    return(
+      <View style={{alignItems: 'flex-start'}}>
+        {
+          rawResources.map((data)=>{
+            return(
+              <Text>
+                {data.Name}: {data.Amount}
+              </Text>
+            )
+          })
+        }
+      </View>
+    )
   }
 
   return (
@@ -283,14 +290,6 @@ export default function App() {
         />
       </View>
       <View style={{ alignItems: "center" }}>
-        <View>
-          <Text>Wood Log: {rawResources.WoodLog}</Text>
-          <Text>Stone: {rawResources.Stone}</Text>
-          <Text>Copper Ore: {rawResources.CopperOre}</Text>
-          <Text>Iron Ore: {rawResources.IronOre}</Text>
-          <Text>Coal: {rawResources.Coal}</Text>
-          <Text>Wolframite: {rawResources.Wolframite}</Text>
-        </View>
 
         <View
           style={{ flexDirection: "row", alignItems: "center", padding: 5 }}
@@ -336,19 +335,9 @@ export default function App() {
           </Picker>
         </View>
       </View>
-      <View style={{ alignItems: "flex-start" }}>
-        {ingredients.map((data) => {
-          if (data.amount == 0) {
-            return null;
-          }
-          return (
-            <Text style={{ paddingLeft: data.depth * 10 }}>
-              {data.amount} {data.name} ({data.numberOfBuildings}{" "}
-              {data.building})
-            </Text>
-          );
-        })}
-      </View>
+      {renderIngList() } 
+      {//renderList()
+      }
       <View style={{ height: 50 }} />
     </View>
   );
