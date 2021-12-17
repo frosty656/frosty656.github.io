@@ -165,8 +165,7 @@ export default function App() {
         });
         const buildingLevel = getBuildingLevel(ingInfo!.building);
         const multiplier = levelMultiplier(buildingLevel!);
-        const numberOfBuildings =
-          requireAmountPerMin / ingInfo!.itemsPerMin / multiplier;
+        const numberOfBuildings = requireAmountPerMin / ingInfo!.itemsPerMin / multiplier;
         addIng(
           ingredient.name,
           requireAmountPerMin,
@@ -203,21 +202,22 @@ export default function App() {
       <View style={{alignItems: 'flex-start'}}>
         {
           rawResources.map((data)=>{
-            var itemsPerMin = 0;
+            const buildingLevel = getBuildingLevel(data.Name)
+            const multiplier = levelMultiplier(buildingLevel!)
+            
+
+            var productionPerBuilding;
             if (resources.includes(data.Name)) {
-              const buildingLevel = getBuildingLevel("extractor");
-              const multiplier = levelMultiplier(buildingLevel!);
-              itemsPerMin =  (7.5 * multiplier)
+              productionPerBuilding =  7.5
             } else {
               const ingInfo = allItems.find((item) => {
                 return item.name == data.Name;
               });
-              itemsPerMin = ingInfo!.itemsPerMin
+              productionPerBuilding = ingInfo!.itemsPerMin
             }
-            
-            const buildingLevel = getBuildingLevel(data.Building);
-            const multiplier = levelMultiplier(buildingLevel!);
-            const numberOfBuildings = data.Amount / itemsPerMin / multiplier;
+
+            const numberOfBuildings = data.Amount / (productionPerBuilding * multiplier)
+
             return(
               <Text>
                 {data.Name}: {data.Amount} ({Math.ceil(numberOfBuildings)} {data.Building})
