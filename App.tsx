@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import { allItems, resources } from "./ItemInfo";
 import { Picker } from "@react-native-picker/picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function App() {
   interface Ingredient {
@@ -13,11 +14,11 @@ export default function App() {
   }
 
   interface Resources {
-    Name: string,
-    Amount: number,
-    Building: string,
+    name: string;
+    building: string;
+    amount: number;
   }
-  const [treeView, setTreeView] = useState(true);
+
   const [currentItem, setCurrentItem] = useState("Wood Plank");
   const [amount, setAmount] = useState(1);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -28,15 +29,37 @@ export default function App() {
   const [forgeLevel, setForgeLevel] = useState(1);
   const [manufacturerLevel, setManufacturerLevel] = useState(1);
   const [extractorLevel, setExtractorLevel] = useState(1);
-  const [rawResources, setRawResources] = useState<Resources[]>([]);
+  const [rawResources, setRawResources] = useState({});
+  const [treeView, setTreeView] = useState(true);
 
   var ingList: Ingredient[] = [];
-  var resourceCount: Resources[] = [];
+  var rawRes = {};
+
+  // OnLoad
+  useEffect(() => {
+    // Get all of the settings from storage
+    (async () => {
+      const ws = await getData("workshop");
+      setWorkShopLevel(ws != "" ? parseInt(ws) : 1);
+      const fu = await getData("furnace");
+      setFurnaceLevel(fu != "" ? parseInt(fu) : 1);
+      const ms = await getData("machineshop");
+      setMachineShopLevel(ms != "" ? parseInt(ms) : 1);
+      const inf = await getData("industiralfactory");
+      setIndustrialFactoryLevel(inf != "" ? parseInt(inf) : 1);
+      const fo = await getData("forge");
+      setForgeLevel(fo != "" ? parseInt(fo) : 1);
+      const mf = await getData("manufacturer");
+      setManufacturerLevel(mf != "" ? parseInt(mf) : 1);
+      const ex = await getData("extractor");
+      setExtractorLevel(ex != "" ? parseInt(ex) : 1);
+    })();
+  }, []);
 
   // If any params are updated then we want to recalculate the list
   useEffect(() => {
     ingList = [];
-    resourceCount = []
+    rawRes = {};
 
     const ingInfo = allItems.find((item) => {
       return item.name == currentItem;
@@ -50,7 +73,6 @@ export default function App() {
     addIng(currentItem, amount, 0, numberOfBuildings, building);
     GenerateList(currentItem, amount);
     setIngredients(ingList);
-    setRawResources(resourceCount);
   }, [
     workshopLevel,
     furnaceLevel,
@@ -58,7 +80,6 @@ export default function App() {
     industrialFactoryLevel,
     forgeLevel,
     manufacturerLevel,
-    extractorLevel,
     amount,
     currentItem,
   ]);
@@ -69,7 +90,6 @@ export default function App() {
     }
   }, [ingList]);
 
-
   const addIng = (
     name: string,
     amount: number,
@@ -77,23 +97,6 @@ export default function App() {
     numberOfBuildings: number,
     building: string
   ) => {
-    // Add to the sum list
-    var itemInArray = false;
-    resourceCount.forEach(element => {
-      if(element.Name == name){
-        element.Amount += amount
-        itemInArray = true
-      }
-    });
-
-    if(!itemInArray){
-      resourceCount.push({
-        Name: name,
-        Amount: amount,
-        Building: building
-      })
-    }
-
     ingList.push({
       name: name,
       amount: amount,
@@ -139,6 +142,26 @@ export default function App() {
     }
   }
 
+  const storeData = async (key: string, value: string) => {
+    try {
+      await AsyncStorage.setItem(key, value);
+    } catch (e) {
+      // saving error
+    }
+  };
+
+  const getData = async (key: string) => {
+    try {
+      const value = await AsyncStorage.getItem(key);
+      if (value !== null) {
+        return value;
+      }
+    } catch (e) {
+      // error reading value
+    }
+    return "";
+  };
+
   function GenerateList(name: string, amountPerMin = 1, depth = 1) {
     const itemInfo = allItems.find((item) => {
       return item.name == name;
@@ -146,11 +169,13 @@ export default function App() {
 
     itemInfo?.ingredientList.forEach((ingredient) => {
       const requireAmountPerMin = ingredient.amount * amountPerMin;
+
       const buildingLevel = getBuildingLevel("extractor");
       const multiplier = levelMultiplier(buildingLevel!);
       const numberOfBuildings = Math.ceil(
         requireAmountPerMin / (7.5 * multiplier)
       );
+
       if (resources.includes(ingredient.name)) {
         addIng(
           ingredient.name,
@@ -165,7 +190,8 @@ export default function App() {
         });
         const buildingLevel = getBuildingLevel(ingInfo!.building);
         const multiplier = levelMultiplier(buildingLevel!);
-        const numberOfBuildings = requireAmountPerMin / ingInfo!.itemsPerMin / multiplier;
+        const numberOfBuildings =
+          requireAmountPerMin / ingInfo!.itemsPerMin / multiplier;
         addIng(
           ingredient.name,
           requireAmountPerMin,
@@ -178,7 +204,11 @@ export default function App() {
     });
   }
 
-  function renderList(){
+  function RenderSummary() {
+    return <View style={{ alignItems: "flex-start" }}></View>;
+  }
+
+  function RenderTree() {
     return (
       <View style={{ alignItems: "flex-start" }}>
         {ingredients.map((data) => {
@@ -193,40 +223,7 @@ export default function App() {
           );
         })}
       </View>
-    )
-  }
-
-  function renderIngList(){
-    // TODO: This should be cleaned up
-    return(
-      <View style={{alignItems: 'flex-start'}}>
-        {
-          rawResources.map((data)=>{
-            const buildingLevel = getBuildingLevel(data.Name)
-            const multiplier = levelMultiplier(buildingLevel!)
-            
-
-            var productionPerBuilding;
-            if (resources.includes(data.Name)) {
-              productionPerBuilding =  7.5
-            } else {
-              const ingInfo = allItems.find((item) => {
-                return item.name == data.Name;
-              });
-              productionPerBuilding = ingInfo!.itemsPerMin
-            }
-
-            const numberOfBuildings = data.Amount / (productionPerBuilding * multiplier)
-
-            return(
-              <Text>
-                {data.Name}: {data.Amount} ({Math.ceil(numberOfBuildings)} {data.Building})
-              </Text>
-            )
-          })
-        }
-      </View>
-    )
+    );
   }
 
   return (
@@ -237,6 +234,7 @@ export default function App() {
           style={styles.buildingLevelInput}
           keyboardType="numeric"
           onChangeText={(input) => {
+            storeData("extractor", input.replace(/[^1-4]/g, ""));
             setExtractorLevel(Number(input.replace(/[^1-4]/g, "")));
           }}
           value={extractorLevel.toString()}
@@ -246,6 +244,7 @@ export default function App() {
           style={styles.buildingLevelInput}
           keyboardType="numeric"
           onChangeText={(input) => {
+            storeData("workshop", input.replace(/[^1-4]/g, ""));
             setWorkShopLevel(Number(input.replace(/[^1-4]/g, "")));
           }}
           value={workshopLevel.toString()}
@@ -255,6 +254,7 @@ export default function App() {
           style={styles.buildingLevelInput}
           keyboardType="numeric"
           onChangeText={(input) => {
+            storeData("furnace", input.replace(/[^1-4]/g, ""));
             setFurnaceLevel(Number(input.replace(/[^1-4]/g, "")));
           }}
           value={furnaceLevel.toString()}
@@ -266,6 +266,7 @@ export default function App() {
           style={styles.buildingLevelInput}
           keyboardType="numeric"
           onChangeText={(input) => {
+            storeData("machineshop", input.replace(/[^1-4]/g, ""));
             setMachineShopLevel(Number(input.replace(/[^1-4]/g, "")));
           }}
           value={machineShopLevel.toString()}
@@ -275,6 +276,7 @@ export default function App() {
           style={styles.buildingLevelInput}
           keyboardType="numeric"
           onChangeText={(input) => {
+            storeData("industrialfactory", input.replace(/[^1-4]/g, ""));
             setIndustrialFactoryLevel(Number(input.replace(/[^1-4]/g, "")));
           }}
           value={industrialFactoryLevel.toString()}
@@ -284,6 +286,7 @@ export default function App() {
           style={styles.buildingLevelInput}
           keyboardType="numeric"
           onChangeText={(input) => {
+            storeData("forge", input.replace(/[^1-4]/g, ""));
             setForgeLevel(Number(input.replace(/[^1-4]/g, "")));
           }}
           value={forgeLevel.toString()}
@@ -295,13 +298,13 @@ export default function App() {
           style={styles.buildingLevelInput}
           keyboardType="numeric"
           onChangeText={(input) => {
+            storeData("manufacturer", input.replace(/[^1-4]/g, ""));
             setManufacturerLevel(Number(input.replace(/[^1-4]/g, "")));
           }}
           value={manufacturerLevel.toString()}
         />
       </View>
       <View style={{ alignItems: "center" }}>
-
         <View
           style={{ flexDirection: "row", alignItems: "center", padding: 5 }}
         >
@@ -347,23 +350,8 @@ export default function App() {
         </View>
       </View>
 
-      <View style={{flexDirection: 'row', width: 500, alignSelf: 'center', justifyContent: 'center'}}>
-        <TouchableOpacity 
-          style={{ height: 50, width: '25%', borderColor: 'black', borderRadius: 5, borderWidth: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: treeView ? '#D3D3D3' : 'white'}}
-          onPress={()=>{setTreeView(true)}}
+      {treeView ? RenderTree() : RenderSummary()}
 
-        >
-          <Text style={{padding: 5}}>Tree View</Text>
-        </TouchableOpacity>
-        <View style={{width: 5}}/>
-        <TouchableOpacity 
-          style={{ height: 50, width: '25%', borderColor: 'black', borderRadius: 5, borderWidth: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: !treeView ? '#D3D3D3' : 'white'}}
-              onPress={()=>{setTreeView(false)}}
-        >
-          <Text style={{padding: 5}}>Summary View</Text>
-        </TouchableOpacity>
-      </View>
-      {treeView? renderList() : renderIngList() } 
       <View style={{ height: 50 }} />
     </View>
   );
