@@ -285,7 +285,7 @@ export const allItems = [
     building: "Manufacturer",
     value: 250,
     ingredientList: [
-      { name: "Matter Duplicator", amount: 24 },
+      { name: "Concrete", amount: 24 },
       { name: "Copper Wire", amount: 50 },
       { name: "Electron Microscope", amount: 2 },
       { name: "Super Computer", amount: 2 },
@@ -359,22 +359,19 @@ export const allItems = [
     building: "Manufacturer",
     value: 250,
     ingredientList: [
-      { name: "Electric Motor", amount: 2 },
-      { name: "Tank", amount: 1 },
-      { name: "Turbocharger", amount: 2 },
-      { name: "Industrial Frame", amount: 1 },
+      { name: "Atomic Locator", amount: 4 },
+      { name: "Energy Cube", amount: 5 },
+      { name: "Particle Glue", amount: 100 },
+      { name: "Quantum Entangler", amount: 2 },
     ],
   },
   {
     name: "Particle Glue",
     itemsPerMin: 20,
-    building: "Manufacturer",
+    building: "Workshop",
     value: 250,
     ingredientList: [
-      { name: "Electric Motor", amount: 2 },
-      { name: "Tank", amount: 1 },
-      { name: "Turbocharger", amount: 2 },
-      { name: "Industrial Frame", amount: 1 },
+      { name: "Matter Compressor", amount: 0.1 }
     ],
   },
   {
