@@ -202,7 +202,9 @@ export default function App() {
     return(
       <View style={{alignItems: 'flex-start'}}>
         {
-          rawResources.map((data)=>{
+          rawResources.sort((a, b) => {
+            return a.Name.localeCompare(b.Name);
+          }).map((data)=>{
             var itemsPerMin = 0;
             if (resources.includes(data.Name)) {
               const buildingLevel = getBuildingLevel("extractor");
