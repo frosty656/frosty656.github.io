@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { allItems, resources } from "./ItemInfo";
 import { Picker } from "@react-native-picker/picker";
 
@@ -13,9 +19,9 @@ export default function App() {
   }
 
   interface Resources {
-    Name: string,
-    Amount: number,
-    Building: string,
+    Name: string;
+    Amount: number;
+    Building: string;
   }
   const [treeView, setTreeView] = useState(true);
   const [currentItem, setCurrentItem] = useState("Wood Plank");
@@ -36,7 +42,7 @@ export default function App() {
   // If any params are updated then we want to recalculate the list
   useEffect(() => {
     ingList = [];
-    resourceCount = []
+    resourceCount = [];
 
     const ingInfo = allItems.find((item) => {
       return item.name == currentItem;
@@ -69,7 +75,6 @@ export default function App() {
     }
   }, [ingList]);
 
-
   const addIng = (
     name: string,
     amount: number,
@@ -79,19 +84,19 @@ export default function App() {
   ) => {
     // Add to the sum list
     var itemInArray = false;
-    resourceCount.forEach(element => {
-      if(element.Name == name){
-        element.Amount += amount
-        itemInArray = true
+    resourceCount.forEach((element) => {
+      if (element.Name == name) {
+        element.Amount += amount;
+        itemInArray = true;
       }
     });
 
-    if(!itemInArray){
+    if (!itemInArray) {
       resourceCount.push({
         Name: name,
         Amount: amount,
-        Building: building
-      })
+        Building: building,
+      });
     }
 
     ingList.push({
@@ -179,7 +184,7 @@ export default function App() {
     });
   }
 
-  function renderList(){
+  function renderList() {
     return (
       <View style={{ alignItems: "flex-start" }}>
         {ingredients.map((data) => {
@@ -194,41 +199,43 @@ export default function App() {
           );
         })}
       </View>
-    )
+    );
   }
 
-  function renderIngList(){
+  function renderIngList() {
     // TODO: This should be cleaned up
-    return(
-      <View style={{alignItems: 'flex-start'}}>
-        {
-          rawResources.sort((a, b) => {
+    return (
+      <View style={{ alignItems: "flex-start" }}>
+        {rawResources
+          .sort((a, b) => {
             return a.Name.localeCompare(b.Name);
-          }).map((data)=>{
+          })
+          .map((data) => {
             var itemsPerMin = 0;
             if (resources.includes(data.Name)) {
-              const buildingLevel = getBuildingLevel("extractor");
-              const multiplier = levelMultiplier(buildingLevel!);
-              itemsPerMin =  (7.5 * multiplier)
+              //const buildingLevel = getBuildingLevel("extractor");
+              //const multiplier = levelMultiplier(buildingLevel!);
+              itemsPerMin = 7.5;
             } else {
               const ingInfo = allItems.find((item) => {
                 return item.name == data.Name;
               });
-              itemsPerMin = ingInfo!.itemsPerMin
+              itemsPerMin = ingInfo!.itemsPerMin;
             }
-            
+
             const buildingLevel = getBuildingLevel(data.Building);
+
             const multiplier = levelMultiplier(buildingLevel!);
             const numberOfBuildings = data.Amount / itemsPerMin / multiplier;
-            return(
+            return (
               <Text>
-                {data.Name}: {data.Amount} ({Math.ceil(numberOfBuildings)} {data.Building})
+                {data.Name}: {data.Amount} ({Math.ceil(numberOfBuildings)}{" "}
+                {data.Building})
               </Text>
-            )
-          })
-        }
+            );
+          })}
       </View>
-    )
+    );
   }
 
   return (
@@ -303,7 +310,6 @@ export default function App() {
         />
       </View>
       <View style={{ alignItems: "center" }}>
-
         <View
           style={{ flexDirection: "row", alignItems: "center", padding: 5 }}
         >
@@ -349,23 +355,51 @@ export default function App() {
         </View>
       </View>
 
-      <View style={{flexDirection: 'row', width: 500, alignSelf: 'center', justifyContent: 'center'}}>
-        <TouchableOpacity 
-          style={{ height: 50, width: '25%', borderColor: 'black', borderRadius: 5, borderWidth: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: treeView ? '#D3D3D3' : 'white'}}
-          onPress={()=>{setTreeView(true)}}
-
+      <View
+        style={{
+          flexDirection: "row",
+          width: 500,
+          alignSelf: "center",
+          justifyContent: "center",
+        }}
+      >
+        <TouchableOpacity
+          style={{
+            height: 50,
+            width: "25%",
+            borderColor: "black",
+            borderRadius: 5,
+            borderWidth: 1,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: treeView ? "#D3D3D3" : "white",
+          }}
+          onPress={() => {
+            setTreeView(true);
+          }}
         >
-          <Text style={{padding: 5}}>Tree View</Text>
+          <Text style={{ padding: 5 }}>Tree View</Text>
         </TouchableOpacity>
-        <View style={{width: 5}}/>
-        <TouchableOpacity 
-          style={{ height: 50, width: '25%', borderColor: 'black', borderRadius: 5, borderWidth: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: !treeView ? '#D3D3D3' : 'white'}}
-              onPress={()=>{setTreeView(false)}}
+        <View style={{ width: 5 }} />
+        <TouchableOpacity
+          style={{
+            height: 50,
+            width: "25%",
+            borderColor: "black",
+            borderRadius: 5,
+            borderWidth: 1,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: !treeView ? "#D3D3D3" : "white",
+          }}
+          onPress={() => {
+            setTreeView(false);
+          }}
         >
-          <Text style={{padding: 5}}>Summary View</Text>
+          <Text style={{ padding: 5 }}>Summary View</Text>
         </TouchableOpacity>
       </View>
-      {treeView? renderList() : renderIngList() } 
+      {treeView ? renderList() : renderIngList()}
       <View style={{ height: 50 }} />
     </View>
   );
