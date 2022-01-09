@@ -134,6 +134,8 @@ export default function App() {
         return 2;
       case 4:
         return 3;
+      case 5:
+          return 4;
       default:
         return 1;
     }
@@ -165,8 +167,8 @@ export default function App() {
         });
         const buildingLevel = getBuildingLevel(ingInfo!.building);
         const multiplier = levelMultiplier(buildingLevel!);
-        const numberOfBuildings =
-          requireAmountPerMin / ingInfo!.itemsPerMin / multiplier;
+        console.log(multiplier);
+        const numberOfBuildings = requireAmountPerMin / ingInfo!.itemsPerMin / multiplier;
         addIng(
           ingredient.name,
           requireAmountPerMin,
@@ -239,7 +241,7 @@ export default function App() {
           style={styles.buildingLevelInput}
           keyboardType="numeric"
           onChangeText={(input) => {
-            setExtractorLevel(Number(input.replace(/[^1-4]/g, "")));
+            setExtractorLevel(Number(input.replace(/[^1-5]/g, "")));
           }}
           value={extractorLevel.toString()}
         />
