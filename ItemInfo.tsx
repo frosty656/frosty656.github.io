@@ -272,7 +272,7 @@ export const allItems = [
     building: "Manufacturer",
     value: 250,
     ingredientList: [
-      { name: "Computer", amount: 1 },
+      { name: "Computer", amount: 2 },
       { name: "Heat Sink", amount: 8 },
       { name: "Turbocharger", amount: 1 },
       { name: "Coupler", amount: 8 },
