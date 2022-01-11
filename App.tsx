@@ -57,6 +57,7 @@ export default function App() {
     GenerateList(currentItem, amount);
     setIngredients(ingList);
     setRawResources(resourceCount);
+    console.log("Here");
   }, [
     workshopLevel,
     furnaceLevel,
@@ -114,9 +115,9 @@ export default function App() {
         return workshopLevel;
       case "furnace":
         return furnaceLevel;
-      case "machineshop":
+      case "machine shop":
         return machineShopLevel;
-      case "industrialfactory":
+      case "industrial factory":
         return industrialFactoryLevel;
       case "forge":
         return forgeLevel;
@@ -124,7 +125,7 @@ export default function App() {
         return manufacturerLevel;
       case "extractor":
         return extractorLevel;
-      case "Earth Transporter":
+      case "earth transporter":
         return 1;
     }
   }
@@ -172,7 +173,6 @@ export default function App() {
         });
         const buildingLevel = getBuildingLevel(ingInfo!.building);
         const multiplier = levelMultiplier(buildingLevel!);
-        console.log(multiplier);
         const numberOfBuildings = requireAmountPerMin / ingInfo!.itemsPerMin / multiplier;
         addIng(
           ingredient.name,
