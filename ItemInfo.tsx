@@ -403,7 +403,7 @@ export const allItems = [
     ingredientList: [
       { name: "Concrete", amount: 4 },
       { name: "Glass", amount: 2 },
-      { name: "Tungsten Ore", amount: 4 },
+      { name: "Tungsten Carbide", amount: 4 },
     ],
   },
 ];
