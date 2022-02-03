@@ -36,6 +36,19 @@ export default function App() {
   const [extractorLevel, setExtractorLevel] = useState(1);
   const [rawResources, setRawResources] = useState<Resources[]>([]);
 
+  const [woodAmount, setWoodAmount] = useState(1000);
+  const [stoneAmount, setStoneAmount] = useState(1000);
+  const [ironAmount, setIronAmount] = useState(1000);
+  const [copperAmount, SetCopperAmount] = useState(1000);
+  const [wolframiteAmount, setWolframiteAmount] = useState(10000);
+
+  var resourceSums = {
+    wood: 0,
+    stone: 0,
+    iron: 0,
+    copper: 0,
+    wolframite: 0,
+  }
   var ingList: Ingredient[] = [];
   var resourceCount: Resources[] = [];
 
@@ -109,6 +122,22 @@ export default function App() {
     });
   };
 
+  function getResourceAmount(name: string) {
+    switch (name.toLowerCase()) {
+      case "wood":
+        return woodAmount;
+      case "stone":
+        return stoneAmount;
+      case "iron":
+        return ironAmount;
+      case "copper":
+        return copperAmount;
+      case "wolframite":
+        return wolframiteAmount;
+      default:
+        return 0;
+  }
+
   function getBuildingLevel(name: string) {
     switch (name.toLowerCase()) {
       case "workshop":
@@ -145,6 +174,64 @@ export default function App() {
       default:
         return 1;
     }
+  }
+
+  function GetMaxOutput(name: string){
+    sumOfResources(name, 1);
+    var maxOutput = Infinity;
+    if (resourceSums.wood / woodAmount < maxOutput) {
+      maxOutput = resourceSums.wood / woodAmount;
+    }
+    if (resourceSums.stone / stoneAmount < maxOutput) {
+      maxOutput = resourceSums.stone / stoneAmount;
+    }
+    if (resourceSums.iron / ironAmount < maxOutput) {
+      maxOutput = resourceSums.iron / ironAmount;
+    }
+    if (resourceSums.copper / copperAmount < maxOutput) {
+      maxOutput = resourceSums.copper / copperAmount;
+    }
+    if (resourceSums.wolframite / wolframiteAmount < maxOutput) {
+      maxOutput = resourceSums.wolframite / wolframiteAmount;
+    }
+
+    return maxOutput;
+  }
+
+  function sumOfResources(name: string, amount: number) {
+    const item = allItems.find((item) => {
+      return item.name == name;
+    });
+
+    if (!item) {
+      return 0;
+    }
+
+    item.ingredientList.forEach(element => {
+      if(element.name in resources) {
+        switch (element.name.toLowerCase()) {
+          case "wood":
+            resourceSums.wood += element.amount * amount;
+            break;
+          case "stone":
+            resourceSums.stone += element.amount * amount;
+            break;
+          case "iron":
+            resourceSums.iron += element.amount * amount;
+            break;
+          case "copper":
+            resourceSums.copper += element.amount * amount;
+            break;
+          case "wolframite":
+            resourceSums.wolframite += element.amount * amount;
+            break;
+        }
+      } else {
+        sumOfResources(element.name, element.amount * amount);
+      }
+    });
+
+    return 0;
   }
 
   function GenerateList(name: string, amountPerMin = 1, depth = 1) {
