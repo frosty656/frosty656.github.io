@@ -136,6 +136,7 @@ export default function App() {
         return wolframiteAmount;
       default:
         return 0;
+    }
   }
 
   function getBuildingLevel(name: string) {
@@ -194,7 +195,6 @@ export default function App() {
     if (resourceSums.wolframite / wolframiteAmount < maxOutput) {
       maxOutput = resourceSums.wolframite / wolframiteAmount;
     }
-
     return maxOutput;
   }
 
