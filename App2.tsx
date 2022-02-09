@@ -1,4 +1,3 @@
-// https://www.npmjs.com/package/react-native-numeric-input
 import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
@@ -24,7 +23,6 @@ export default function App() {
     Amount: number;
     Building: string;
   }
-
   const [treeView, setTreeView] = useState(true);
   const [currentItem, setCurrentItem] = useState("Wood Plank");
   const [amount, setAmount] = useState(1);
@@ -38,15 +36,19 @@ export default function App() {
   const [extractorLevel, setExtractorLevel] = useState(1);
   const [rawResources, setRawResources] = useState<Resources[]>([]);
 
-  const [maxItemPerMin, setMaxItemPerMin] = useState(0);
   const [woodAmount, setWoodAmount] = useState(1000);
   const [stoneAmount, setStoneAmount] = useState(1000);
   const [ironAmount, setIronAmount] = useState(1000);
   const [copperAmount, SetCopperAmount] = useState(1000);
-  const [wolframiteAmount, setWolframiteAmount] = useState(1000);
-  const [coalAmount, setCoalAmount] = useState(1000);
+  const [wolframiteAmount, setWolframiteAmount] = useState(10000);
 
-
+  var resourceSums = {
+    wood: 0,
+    stone: 0,
+    iron: 0,
+    copper: 0,
+    wolframite: 0,
+  }
   var ingList: Ingredient[] = [];
   var resourceCount: Resources[] = [];
 
@@ -68,6 +70,7 @@ export default function App() {
     GenerateList(currentItem, amount);
     setIngredients(ingList);
     setRawResources(resourceCount);
+    console.log("Here");
   }, [
     workshopLevel,
     furnaceLevel,
@@ -81,27 +84,10 @@ export default function App() {
   ]);
 
   useEffect(() => {
-    let maxOutput = Infinity;
-    resources.forEach((resource) => {
-      let amount = 0;
-      rawResources.forEach((rawResource) => {
-        if(rawResource.Name == resource) {
-          amount = rawResource.Amount;
-        }
-      });
-
-
-      if(amount > 0){
-        let ipm = getResourceAmount(resource) / amount;
-        console.log(resource + ": " + ipm);
-        if (ipm < maxOutput) {
-          maxOutput = ipm;
-        }
-      }
-    });
-
-    setMaxItemPerMin(maxOutput);
-  }, [rawResources]);
+    if (ingList.length > 0) {
+      return;
+    }
+  }, [ingList]);
 
   const addIng = (
     name: string,
@@ -138,18 +124,16 @@ export default function App() {
 
   function getResourceAmount(name: string) {
     switch (name.toLowerCase()) {
-      case "wood log":
+      case "wood":
         return woodAmount;
       case "stone":
         return stoneAmount;
-      case "iron ore":
+      case "iron":
         return ironAmount;
-      case "copper ore":
+      case "copper":
         return copperAmount;
       case "wolframite":
         return wolframiteAmount;
-      case "coal":
-        return coalAmount;
       default:
         return 0;
     }
@@ -191,6 +175,63 @@ export default function App() {
       default:
         return 1;
     }
+  }
+
+  function GetMaxOutput(name: string){
+    sumOfResources(name, 1);
+    var maxOutput = Infinity;
+    if (resourceSums.wood / woodAmount < maxOutput) {
+      maxOutput = resourceSums.wood / woodAmount;
+    }
+    if (resourceSums.stone / stoneAmount < maxOutput) {
+      maxOutput = resourceSums.stone / stoneAmount;
+    }
+    if (resourceSums.iron / ironAmount < maxOutput) {
+      maxOutput = resourceSums.iron / ironAmount;
+    }
+    if (resourceSums.copper / copperAmount < maxOutput) {
+      maxOutput = resourceSums.copper / copperAmount;
+    }
+    if (resourceSums.wolframite / wolframiteAmount < maxOutput) {
+      maxOutput = resourceSums.wolframite / wolframiteAmount;
+    }
+    return maxOutput;
+  }
+
+  function sumOfResources(name: string, amount: number) {
+    const item = allItems.find((item) => {
+      return item.name == name;
+    });
+
+    if (!item) {
+      return 0;
+    }
+
+    item.ingredientList.forEach(element => {
+      if(element.name in resources) {
+        switch (element.name.toLowerCase()) {
+          case "wood":
+            resourceSums.wood += element.amount * amount;
+            break;
+          case "stone":
+            resourceSums.stone += element.amount * amount;
+            break;
+          case "iron":
+            resourceSums.iron += element.amount * amount;
+            break;
+          case "copper":
+            resourceSums.copper += element.amount * amount;
+            break;
+          case "wolframite":
+            resourceSums.wolframite += element.amount * amount;
+            break;
+        }
+      } else {
+        sumOfResources(element.name, element.amount * amount);
+      }
+    });
+
+    return 0;
   }
 
   function GenerateList(name: string, amountPerMin = 1, depth = 1) {
@@ -250,8 +291,8 @@ export default function App() {
     );
   }
 
-  // We should give these elements an id
   function renderIngList() {
+    // TODO: This should be cleaned up
     return (
       <View style={{ alignItems: "flex-start" }}>
         {rawResources
@@ -261,7 +302,9 @@ export default function App() {
           .map((data) => {
             var itemsPerMin = 0;
             if (resources.includes(data.Name)) {
-              itemsPerMin = 7.5 * levelMultiplier(getBuildingLevel("extractor")!);
+              //const buildingLevel = getBuildingLevel("extractor");
+              //const multiplier = levelMultiplier(buildingLevel!);
+              itemsPerMin = 7.5;
             } else {
               const ingInfo = allItems.find((item) => {
                 return item.name == data.Name;
@@ -287,10 +330,6 @@ export default function App() {
   return (
     <View style={{ alignItems: "center" }}>
       <View style={{ flexDirection: "row", alignItems: "center", padding: 5 }}>
-      <TouchableOpacity onPress={() => {console.log(rawResources)}} style={{backgroundColor: 'lightblue', width: 100, height: 100}}>
-          <Text>{maxItemPerMin.toFixed(2)}</Text>
-      </TouchableOpacity>
-
         <Text style={styles.buildingLevel}>Extractor Level:</Text>
         <TextInput
           style={styles.buildingLevelInput}
@@ -365,7 +404,6 @@ export default function App() {
         >
           <Text style={{ paddingRight: 5 }}>Items/Min</Text>
           <TextInput
-          
             style={{
               width: 75,
               padding: 10,
@@ -376,7 +414,7 @@ export default function App() {
             }}
             keyboardType="numeric"
             onChangeText={(input) => {
-              setAmount(Number(input));
+              setAmount(Number(input.replace(/[^0-9]./g, "")));
             }}
             value={amount.toString()}
           />
