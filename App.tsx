@@ -10,6 +10,8 @@ import {
 import { allItems, resources } from "./ItemInfo";
 import { Picker } from "@react-native-picker/picker";
 
+import NumericInput  from "./Components/NumericInput";
+
 export default function App() {
   interface Ingredient {
     name: string;
@@ -90,7 +92,6 @@ export default function App() {
         }
       });
 
-
       if(amount > 0){
         let ipm = getResourceAmount(resource) / amount;
         console.log(resource + ": " + ipm);
@@ -100,7 +101,7 @@ export default function App() {
       }
     });
 
-    setMaxItemPerMin(maxOutput);
+    setMaxItemPerMin(maxOutput * amount);
   }, [rawResources]);
 
   const addIng = (
@@ -287,7 +288,8 @@ export default function App() {
   return (
     <View style={{ alignItems: "center" }}>
       <View style={{ flexDirection: "row", alignItems: "center", padding: 5 }}>
-      <TouchableOpacity onPress={() => {console.log(rawResources)}} style={{backgroundColor: 'lightblue', width: 100, height: 100}}>
+        <NumericInput width={100} height={30} value={coalAmount} onIncrement={() => setCoalAmount(coalAmount + 1)} onDecrement={() => setCoalAmount(coalAmount - 1)}/>
+      <TouchableOpacity onPress={() => {setAmount(maxItemPerMin)}} style={{backgroundColor: 'lightblue', width: 100, height: 100}}>
           <Text>{maxItemPerMin.toFixed(2)}</Text>
       </TouchableOpacity>
 
