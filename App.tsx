@@ -10,7 +10,7 @@ import {
 import { allItems, resources } from "./ItemInfo";
 import { Picker } from "@react-native-picker/picker";
 
-import NumericInput  from "./Components/NumericInput";
+import NumericInput from "./Components/NumericInput";
 
 export default function App() {
   interface Ingredient {
@@ -47,7 +47,6 @@ export default function App() {
   const [copperAmount, SetCopperAmount] = useState(1000);
   const [wolframiteAmount, setWolframiteAmount] = useState(1000);
   const [coalAmount, setCoalAmount] = useState(1000);
-
 
   var ingList: Ingredient[] = [];
   var resourceCount: Resources[] = [];
@@ -87,12 +86,12 @@ export default function App() {
     resources.forEach((resource) => {
       let amount = 0;
       rawResources.forEach((rawResource) => {
-        if(rawResource.Name == resource) {
+        if (rawResource.Name == resource) {
           amount = rawResource.Amount;
         }
       });
 
-      if(amount > 0){
+      if (amount > 0) {
         let ipm = getResourceAmount(resource) / amount;
         console.log(resource + ": " + ipm);
         if (ipm < maxOutput) {
@@ -136,6 +135,32 @@ export default function App() {
       building: building,
     });
   };
+
+  function getNumericInput(name: string, max: number, min: number) {
+    console.log("START " + name);
+    let sanitizedString = "";
+    let hasDecimal = false;
+    name.split("").forEach((char) => {
+      if (char.includes("1234567890.")) {
+        if (char == ".") {
+          if (!hasDecimal) {
+            hasDecimal = true;
+            sanitizedString += char;
+          }
+        } else {
+          sanitizedString += char;
+        }
+        if (Number(sanitizedString) > max) {
+          sanitizedString = max.toString();
+        }
+        if (Number(sanitizedString) < min) {
+          sanitizedString = min.toString();
+        }
+      }
+    });
+    console.log("END " + name);
+    return Number(sanitizedString) == 0 ? 0 : Number(sanitizedString);
+  }
 
   function getResourceAmount(name: string) {
     switch (name.toLowerCase()) {
@@ -188,7 +213,7 @@ export default function App() {
       case 4:
         return 3;
       case 5:
-          return 4;
+        return 4;
       default:
         return 1;
     }
@@ -220,7 +245,8 @@ export default function App() {
         });
         const buildingLevel = getBuildingLevel(ingInfo!.building);
         const multiplier = levelMultiplier(buildingLevel!);
-        const numberOfBuildings = requireAmountPerMin / ingInfo!.itemsPerMin / multiplier;
+        const numberOfBuildings =
+          requireAmountPerMin / ingInfo!.itemsPerMin / multiplier;
         addIng(
           ingredient.name,
           requireAmountPerMin,
@@ -262,7 +288,8 @@ export default function App() {
           .map((data) => {
             var itemsPerMin = 0;
             if (resources.includes(data.Name)) {
-              itemsPerMin = 7.5 * levelMultiplier(getBuildingLevel("extractor")!);
+              itemsPerMin =
+                7.5 * levelMultiplier(getBuildingLevel("extractor")!);
             } else {
               const ingInfo = allItems.find((item) => {
                 return item.name == data.Name;
@@ -288,19 +315,33 @@ export default function App() {
   return (
     <View style={{ alignItems: "center" }}>
       <View style={{ flexDirection: "row", alignItems: "center", padding: 5 }}>
-        <NumericInput width={100} height={30} value={coalAmount} onIncrement={() => setCoalAmount(coalAmount + 1)} onDecrement={() => setCoalAmount(coalAmount - 1)}/>
-      <TouchableOpacity onPress={() => {setAmount(maxItemPerMin)}} style={{backgroundColor: 'lightblue', width: 100, height: 100}}>
+        <NumericInput
+          title={"Hello"}
+          width={100}
+          height={30}
+          value={coalAmount}
+          onIncrement={() => setCoalAmount(coalAmount + 1)}
+          onDecrement={() => setCoalAmount(coalAmount - 1)}
+        />
+        <TouchableOpacity
+          onPress={() => {
+            setAmount(maxItemPerMin);
+          }}
+          style={{ backgroundColor: "lightblue", width: 100, height: 100 }}
+        >
           <Text>{maxItemPerMin.toFixed(2)}</Text>
-      </TouchableOpacity>
+        </TouchableOpacity>
 
         <Text style={styles.buildingLevel}>Extractor Level:</Text>
         <TextInput
           style={styles.buildingLevelInput}
           keyboardType="numeric"
           onChangeText={(input) => {
-            setExtractorLevel(Number(input.replace(/[^1-5]/g, "")));
+            console.log(getNumericInput(input, 1, 5));
+            setExtractorLevel(getNumericInput(input, 1, 5));
+            console.log(extractorLevel);
           }}
-          value={extractorLevel.toString()}
+          value={extractorLevel == 0 ? "" : extractorLevel.toString()}
         />
         <Text style={styles.buildingLevel}>Workshop Level:</Text>
         <TextInput
@@ -367,7 +408,6 @@ export default function App() {
         >
           <Text style={{ paddingRight: 5 }}>Items/Min</Text>
           <TextInput
-          
             style={{
               width: 75,
               padding: 10,
