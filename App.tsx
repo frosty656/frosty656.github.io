@@ -136,6 +136,32 @@ export default function App() {
     });
   };
 
+  function getNumericInput(name: string, max: number, min: number) {
+    console.log("START " + name);
+    let sanitizedString = "";
+    let hasDecimal = false;
+    name.split("").forEach((char) => {
+      if (char.includes("1234567890.")) {
+        if (char == ".") {
+          if (!hasDecimal) {
+            hasDecimal = true;
+            sanitizedString += char;
+          }
+        } else {
+          sanitizedString += char;
+        }
+        if (Number(sanitizedString) > max) {
+          sanitizedString = max.toString();
+        }
+        if (Number(sanitizedString) < min) {
+          sanitizedString = min.toString();
+        }
+      }
+    });
+    console.log("END " + name);
+    return Number(sanitizedString) == 0 ? 0 : Number(sanitizedString);
+  }
+
   function getResourceAmount(name: string) {
     switch (name.toLowerCase()) {
       case "wood log":
