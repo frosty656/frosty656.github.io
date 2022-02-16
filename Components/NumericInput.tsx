@@ -8,28 +8,169 @@ import {
   Button,
 } from "react-native";
 
-const NumericInput = (props: any) => {
+export default function NumbericInput({
+  height = 100,
+  width = 100,
+  incrementButtonStyle = {
+    backgroundColor: "#FFCCCB",
+    alignitems: "center",
+    textAlign: "center",
+  },
+  decrementButtonStyle = {
+    backgroundColor: "#90EE90",
+    alignitems: "center",
+    textAlign: "center",
+  },
+  value = "0",
+  title = "",
+  onChange = (value: number) => {
+    console.log(value);
+  },
+  max = 1000000,
+  min = 1,
+  showButtons = true,
+  stepSize = 1,
+  ...otherProps
+}) {
+  const [lastValue, setLastValue] = React.useState("");
+  const [currentValue, setCurrentValue] = React.useState(value);
 
-    const {
-        height = 100,
-        width = 100,
-        incrementButtonStyle = {backgroundColor: '#90EE90', alignitems: 'center', textAlign: 'center'},
-        onIncrement = () => {},
-        onDecrement = () => {},
-        decrementButtonStyle = {backgroundColor: '#FFCCCB', alignitems: 'center', textAlign: 'center'},
-        value,
-    } = props;
-    return(
-        <View style={{width: width, height: height, alignItems: 'center', flexDirection: 'row', justifyContent: 'center'}}>
-            <TouchableOpacity style={[incrementButtonStyle, {borderTopLeftRadius: 10, borderBottomLeftRadius: 10, width: width/3, height: height, justifyContent: 'center'}]} onPress={onIncrement}>
-                <Text>+</Text>
-            </TouchableOpacity>
-            <TextInput value={value} style={{width: width/3, textAlign: 'center', borderColor: '#D3D3D3', borderWidth: 1, height: height}}/>
-            <TouchableOpacity style={[decrementButtonStyle, {borderBottomRightRadius: 10, borderTopRightRadius: 10, width: width/3, height: height, justifyContent: 'center'}]} onPress={onDecrement}>
-                <Text>-</Text>
-            </TouchableOpacity>
-        </View>
-    )
+  useEffect(() => {
+    if (currentValue.slice(-1) != ".") {
+      onChange(Number(currentValue));
+    }
+  }, [currentValue]);
+
+  function getNumericInput(text: string) {
+    {
+      let sanitizedString = "";
+      let hasDecimal = false;
+      text.split("").forEach((char) => {
+        if ("1234567890.".includes(char)) {
+          if (char == ".") {
+            if (!hasDecimal) {
+              console.log("has decimal");
+              hasDecimal = true;
+              sanitizedString += char;
+            }
+          } else {
+            sanitizedString += char;
+          }
+          if (Number(sanitizedString) > max) {
+            sanitizedString = max.toString();
+          }
+          if (Number(sanitizedString) < min) {
+            sanitizedString = min.toString();
+          }
+        }
+      });
+      console.log(sanitizedString);
+      if (sanitizedString != lastValue) {
+        setCurrentValue(sanitizedString);
+        setLastValue(sanitizedString);
+      }
+    }
+  }
+
+  function plusButton() {
+    if (showButtons) {
+      return (
+        <TouchableOpacity
+          style={[
+            decrementButtonStyle,
+            {
+              borderTopLeftRadius: 10,
+              borderBottomLeftRadius: 10,
+              width: width / 4,
+              height: height,
+              justifyContent: "center",
+            },
+          ]}
+          onPress={() => getNumericInput((Number(value) - stepSize).toString())}
+        >
+          <Text>-</Text>
+        </TouchableOpacity>
+      );
+    } else {
+      return null;
+    }
+  }
+
+  function minusButton() {
+    if (showButtons) {
+      return (
+        <TouchableOpacity
+          style={[
+            incrementButtonStyle,
+            {
+              borderBottomRightRadius: 10,
+              borderTopRightRadius: 10,
+              width: width / 4,
+              height: height,
+              justifyContent: "center",
+            },
+          ]}
+          onPress={() => getNumericInput((Number(value) + stepSize).toString())}
+        >
+          <Text>+</Text>
+        </TouchableOpacity>
+      );
+    } else {
+      return null;
+    }
+  }
+
+  function textInput() {
+    if (showButtons) {
+      return (
+        <TextInput
+          value={currentValue}
+          style={{
+            width: width / 2,
+            textAlign: "center",
+            borderColor: "#D3D3D3",
+            borderWidth: 1,
+            height: height,
+          }}
+          onChangeText={(text) => getNumericInput(text)}
+          keyboardType="numeric"
+        />
+      );
+    } else {
+      return (
+        <TextInput
+          value={currentValue}
+          style={{
+            width: width / 2,
+            textAlign: "center",
+            borderColor: "#D3D3D3",
+            borderWidth: 1,
+            height: height,
+            borderRadius: 10,
+          }}
+          onChangeText={(text) => getNumericInput(text)}
+          keyboardType="numeric"
+        />
+      );
+    }
+  }
+
+  return (
+    <View style={{ alignItems: "center" }}>
+      <Text>{title}</Text>
+      <View
+        style={{
+          width: width,
+          height: height,
+          alignItems: "center",
+          flexDirection: "row",
+          justifyContent: "center",
+        }}
+      >
+        {plusButton()}
+        {textInput()}
+        {minusButton()}
+      </View>
+    </View>
+  );
 }
-
-export default NumericInput;

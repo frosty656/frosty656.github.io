@@ -10,7 +10,7 @@ import {
 import { allItems, resources } from "./ItemInfo";
 import { Picker } from "@react-native-picker/picker";
 
-import NumericInput  from "./Components/NumericInput";
+import NumericInput from "./Components/NumericInput";
 
 export default function App() {
   interface Ingredient {
@@ -47,7 +47,6 @@ export default function App() {
   const [copperAmount, SetCopperAmount] = useState(1000);
   const [wolframiteAmount, setWolframiteAmount] = useState(1000);
   const [coalAmount, setCoalAmount] = useState(1000);
-
 
   var ingList: Ingredient[] = [];
   var resourceCount: Resources[] = [];
@@ -87,12 +86,12 @@ export default function App() {
     resources.forEach((resource) => {
       let amount = 0;
       rawResources.forEach((rawResource) => {
-        if(rawResource.Name == resource) {
+        if (rawResource.Name == resource) {
           amount = rawResource.Amount;
         }
       });
 
-      if(amount > 0){
+      if (amount > 0) {
         let ipm = getResourceAmount(resource) / amount;
         console.log(resource + ": " + ipm);
         if (ipm < maxOutput) {
@@ -102,7 +101,7 @@ export default function App() {
     });
 
     setMaxItemPerMin(maxOutput * amount);
-  }, [rawResources]);
+  }, [rawResources, woodAmount, stoneAmount, ironAmount, copperAmount, coalAmount, wolframiteAmount]);
 
   const addIng = (
     name: string,
@@ -188,7 +187,7 @@ export default function App() {
       case 4:
         return 3;
       case 5:
-          return 4;
+        return 4;
       default:
         return 1;
     }
@@ -220,7 +219,8 @@ export default function App() {
         });
         const buildingLevel = getBuildingLevel(ingInfo!.building);
         const multiplier = levelMultiplier(buildingLevel!);
-        const numberOfBuildings = requireAmountPerMin / ingInfo!.itemsPerMin / multiplier;
+        const numberOfBuildings =
+          requireAmountPerMin / ingInfo!.itemsPerMin / multiplier;
         addIng(
           ingredient.name,
           requireAmountPerMin,
@@ -251,6 +251,14 @@ export default function App() {
     );
   }
 
+  function editBuildingLevels(){
+    return (
+      <View>
+
+      </View>
+    )
+  }
+
   // We should give these elements an id
   function renderIngList() {
     return (
@@ -262,7 +270,8 @@ export default function App() {
           .map((data) => {
             var itemsPerMin = 0;
             if (resources.includes(data.Name)) {
-              itemsPerMin = 7.5 * levelMultiplier(getBuildingLevel("extractor")!);
+              itemsPerMin =
+                7.5 * levelMultiplier(getBuildingLevel("extractor")!);
             } else {
               const ingInfo = allItems.find((item) => {
                 return item.name == data.Name;
@@ -288,99 +297,143 @@ export default function App() {
   return (
     <View style={{ alignItems: "center" }}>
       <View style={{ flexDirection: "row", alignItems: "center", padding: 5 }}>
-        <NumericInput width={100} height={30} value={coalAmount} onIncrement={() => setCoalAmount(coalAmount + 1)} onDecrement={() => setCoalAmount(coalAmount - 1)}/>
-      <TouchableOpacity onPress={() => {setAmount(maxItemPerMin)}} style={{backgroundColor: 'lightblue', width: 100, height: 100}}>
-          <Text>{maxItemPerMin.toFixed(2)}</Text>
-      </TouchableOpacity>
-
-        <Text style={styles.buildingLevel}>Extractor Level:</Text>
-        <TextInput
-          style={styles.buildingLevelInput}
-          keyboardType="numeric"
-          onChangeText={(input) => {
-            setExtractorLevel(Number(input.replace(/[^1-5]/g, "")));
-          }}
+        <NumericInput
+          title={"Extractor"}
+          width={100}
+          height={30}
           value={extractorLevel.toString()}
-        />
-        <Text style={styles.buildingLevel}>Workshop Level:</Text>
-        <TextInput
-          style={styles.buildingLevelInput}
-          keyboardType="numeric"
-          onChangeText={(input) => {
-            setWorkShopLevel(Number(input.replace(/[^1-4]/g, "")));
+          onChange={(value: number) => {
+            setExtractorLevel(value);
           }}
+          max={5}
+        />
+        <NumericInput
+          title={"Workshop"}
+          width={100}
+          height={30}
           value={workshopLevel.toString()}
-        />
-        <Text style={styles.buildingLevel}>Furnace Level:</Text>
-        <TextInput
-          style={styles.buildingLevelInput}
-          keyboardType="numeric"
-          onChangeText={(input) => {
-            setFurnaceLevel(Number(input.replace(/[^1-4]/g, "")));
+          onChange={(value: number) => {
+            setWorkShopLevel(value);
           }}
+          max={4}
+        />
+        <NumericInput
+          title={"Furnace"}
+          width={100}
+          height={30}
           value={furnaceLevel.toString()}
-        />
-      </View>
-      <View style={{ flexDirection: "row", alignItems: "center", padding: 5 }}>
-        <Text style={styles.buildingLevel}>Machine Shop Level:</Text>
-        <TextInput
-          style={styles.buildingLevelInput}
-          keyboardType="numeric"
-          onChangeText={(input) => {
-            setMachineShopLevel(Number(input.replace(/[^1-4]/g, "")));
+          onChange={(value: number) => {
+            setFurnaceLevel(value);
           }}
+          max={4}
+        />
+        <NumericInput
+          title={"Machine Shop"}
+          width={100}
+          height={30}
           value={machineShopLevel.toString()}
-        />
-        <Text style={styles.buildingLevel}>Industrial Factory Level:</Text>
-        <TextInput
-          style={styles.buildingLevelInput}
-          keyboardType="numeric"
-          onChangeText={(input) => {
-            setIndustrialFactoryLevel(Number(input.replace(/[^1-4]/g, "")));
+          onChange={(value: number) => {
+            setMachineShopLevel(value);
           }}
+          max={4}
+        />
+        <NumericInput
+          title={"Industrial Factory"}
+          width={100}
+          height={30}
           value={industrialFactoryLevel.toString()}
-        />
-        <Text style={styles.buildingLevel}>Forge Level:</Text>
-        <TextInput
-          style={styles.buildingLevelInput}
-          keyboardType="numeric"
-          onChangeText={(input) => {
-            setForgeLevel(Number(input.replace(/[^1-4]/g, "")));
+          onChange={(value: number) => {
+            setIndustrialFactoryLevel(value);
           }}
+          max={4}
+        />
+        <NumericInput
+          title={"Forge"}
+          width={100}
+          height={30}
           value={forgeLevel.toString()}
+          onChange={(value: number) => {
+            setForgeLevel(value);
+          }}
+          max={4}
+        />
+        <NumericInput
+          title={"Manufacturer"}
+          width={100}
+          height={30}
+          value={manufacturerLevel.toString()}
+          onChange={(value: number) => {
+            setManufacturerLevel(value);
+          }}
+          max={4}
         />
       </View>
       <View style={{ flexDirection: "row", alignItems: "center", padding: 5 }}>
-        <Text style={styles.buildingLevel}>Manufacturer Level:</Text>
-        <TextInput
-          style={styles.buildingLevelInput}
-          keyboardType="numeric"
-          onChangeText={(input) => {
-            setManufacturerLevel(Number(input.replace(/[^1-4]/g, "")));
-          }}
-          value={manufacturerLevel.toString()}
-        />
-      </View>
+        <NumericInput
+            title={"Wood"}
+            width={100}
+            height={30}
+            value={woodAmount.toString()}
+            onChange={(value: number) => {
+              setWoodAmount(value);
+            }}
+            max={10000}
+          />
+          <NumericInput
+            title={"Stone"}
+            width={100}
+            height={30}
+            value={stoneAmount.toString()}
+            onChange={(value: number) => {
+              setStoneAmount(value);
+            }}
+            max={10000}
+          />
+          <NumericInput
+            title={"Iron"}
+            width={100}
+            height={30}
+            value={ironAmount.toString()}
+            onChange={(value: number) => {
+              setIronAmount(value);
+            }}
+            max={10000}
+          />
+          <NumericInput
+            title={"Coal"}
+            width={100}
+            height={30}
+            value={coalAmount.toString()}
+            onChange={(value: number) => {
+              setCoalAmount(value);
+            }}
+            max={10000}
+          />
+          <NumericInput
+            title={"Wolframite"}
+            width={100}
+            height={30}
+            value={wolframiteAmount.toString()}
+            onChange={(value: number) => {
+              setWolframiteAmount(value);
+            }}
+            max={10000}
+          />
+        </View>
       <View style={{ alignItems: "center" }}>
         <View
           style={{ flexDirection: "row", alignItems: "center", padding: 5 }}
         >
-          <Text style={{ paddingRight: 5 }}>Items/Min</Text>
-          <TextInput
-          
-            style={{
-              width: 75,
-              padding: 10,
-              borderColor: "black",
-              borderRadius: 5,
-              borderWidth: 1,
-              height: 40,
-            }}
-            keyboardType="numeric"
-            onChangeText={(input) => {
-              setAmount(Number(input));
-            }}
+          <NumericInput
+            title={"Items/Min"}
+            width={150}
+            height={45}
             value={amount.toString()}
+            onChange={(value: number) => {
+              setAmount(value);
+            }}
+            max={10000}
+            showButtons={false}
           />
           <View style={{ width: 5 }} />
 
@@ -416,6 +469,19 @@ export default function App() {
           justifyContent: "center",
         }}
       >
+        <TouchableOpacity 
+          style={{
+            height: 25,
+            width: "15%",
+            borderColor: "black",
+            borderRadius: 5,
+            borderWidth: 1,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onPress={() => setAmount(maxItemPerMin)}>
+          <Text>{maxItemPerMin.toFixed(2)}</Text>
+        </TouchableOpacity>
         <TouchableOpacity
           style={{
             height: 50,
