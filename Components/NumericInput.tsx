@@ -35,6 +35,8 @@ export default function NumbericInput({
   const [lastValue, setLastValue] = React.useState("");
   const [currentValue, setCurrentValue] = React.useState(value);
 
+  useEffect(() => {setCurrentValue(value)}, [value])
+
   useEffect(() => {
     if (currentValue.slice(-1) != ".") {
       onChange(Number(currentValue));
@@ -49,7 +51,6 @@ export default function NumbericInput({
         if ("1234567890.".includes(char)) {
           if (char == ".") {
             if (!hasDecimal) {
-              console.log("has decimal");
               hasDecimal = true;
               sanitizedString += char;
             }
@@ -64,7 +65,6 @@ export default function NumbericInput({
           }
         }
       });
-      console.log(sanitizedString);
       if (sanitizedString != lastValue) {
         setCurrentValue(sanitizedString);
         setLastValue(sanitizedString);
@@ -156,7 +156,7 @@ export default function NumbericInput({
   }
 
   return (
-    <View style={{ alignItems: "center" }}>
+    <View style={{ alignItems: "center", paddingHorizontal: 10, paddingVertical: 5 }}>
       <Text>{title}</Text>
       <View
         style={{

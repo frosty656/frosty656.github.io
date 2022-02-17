@@ -84,16 +84,15 @@ export default function App() {
   useEffect(() => {
     let maxOutput = Infinity;
     resources.forEach((resource) => {
-      let amount = 0;
+      let resourceAmount = 0;
       rawResources.forEach((rawResource) => {
         if (rawResource.Name == resource) {
-          amount = rawResource.Amount;
+          resourceAmount = rawResource.Amount;
         }
       });
 
-      if (amount > 0) {
-        let ipm = getResourceAmount(resource) / amount;
-        console.log(resource + ": " + ipm);
+      if (resourceAmount > 0) {
+        let ipm = getResourceAmount(resource) / resourceAmount;
         if (ipm < maxOutput) {
           maxOutput = ipm;
         }
@@ -135,32 +134,6 @@ export default function App() {
       building: building,
     });
   };
-
-  function getNumericInput(name: string, max: number, min: number) {
-    console.log("START " + name);
-    let sanitizedString = "";
-    let hasDecimal = false;
-    name.split("").forEach((char) => {
-      if (char.includes("1234567890.")) {
-        if (char == ".") {
-          if (!hasDecimal) {
-            hasDecimal = true;
-            sanitizedString += char;
-          }
-        } else {
-          sanitizedString += char;
-        }
-        if (Number(sanitizedString) > max) {
-          sanitizedString = max.toString();
-        }
-        if (Number(sanitizedString) < min) {
-          sanitizedString = min.toString();
-        }
-      }
-    });
-    console.log("END " + name);
-    return Number(sanitizedString) == 0 ? 0 : Number(sanitizedString);
-  }
 
   function getResourceAmount(name: string) {
     switch (name.toLowerCase()) {
@@ -277,14 +250,6 @@ export default function App() {
     );
   }
 
-  function editBuildingLevels(){
-    return (
-      <View>
-
-      </View>
-    )
-  }
-
   // We should give these elements an id
   function renderIngList() {
     return (
@@ -322,7 +287,7 @@ export default function App() {
 
   return (
     <View style={{ alignItems: "center" }}>
-      <View style={{ flexDirection: "row", alignItems: "center", padding: 5 }}>
+      <View style={{ flexDirection: "row", alignItems: "center", padding: 5, flexWrap: 'wrap', justifyContent: 'center'  }}>
         <NumericInput
           title={"Extractor"}
           width={100}
@@ -394,7 +359,7 @@ export default function App() {
           max={4}
         />
       </View>
-      <View style={{ flexDirection: "row", alignItems: "center", padding: 5 }}>
+      <View style={{ flexDirection: "row", alignItems: "center", padding: 5, flexWrap: 'wrap', justifyContent: 'center' }}>
         <NumericInput
             title={"Wood"}
             width={100}
@@ -448,8 +413,25 @@ export default function App() {
         </View>
       <View style={{ alignItems: "center" }}>
         <View
-          style={{ flexDirection: "row", alignItems: "center", padding: 5 }}
+          style={{ flexDirection: "row", alignItems: "center", padding: 10 }}
         >
+          <View>
+            <Text>Max Output</Text>
+          <TouchableOpacity 
+          style={{
+            height: 45,
+            width: 100,
+            borderColor: "black",
+            borderRadius: 5,
+            borderWidth: 1,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onPress={() => setAmount(maxItemPerMin)}>
+            <Text style={{fontSize: 8}}>(Press Me)</Text>
+          <Text>{maxItemPerMin.toFixed(2)}</Text>
+        </TouchableOpacity>
+        </View>
           <NumericInput
             title={"Items/Min"}
             width={150}
@@ -495,19 +477,6 @@ export default function App() {
           justifyContent: "center",
         }}
       >
-        <TouchableOpacity 
-          style={{
-            height: 25,
-            width: "15%",
-            borderColor: "black",
-            borderRadius: 5,
-            borderWidth: 1,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          onPress={() => setAmount(maxItemPerMin)}>
-          <Text>{maxItemPerMin.toFixed(2)}</Text>
-        </TouchableOpacity>
         <TouchableOpacity
           style={{
             height: 50,
@@ -571,5 +540,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     height: 30,
+  },
+  inputContainer: {
+    lexDirection: "row", 
+    alignItems: "center", 
+    padding: 5, 
+    flexWrap: 'wrap', 
+    justifyContent: 'center'
   },
 });
