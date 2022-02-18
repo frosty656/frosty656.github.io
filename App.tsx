@@ -368,7 +368,7 @@ export default function App() {
             onChange={(value: number) => {
               setWoodAmount(value);
             }}
-            max={10000}
+            max={100000}
           />
           <NumericInput
             title={"Stone"}
@@ -378,7 +378,7 @@ export default function App() {
             onChange={(value: number) => {
               setStoneAmount(value);
             }}
-            max={10000}
+            max={100000}
           />
           <NumericInput
             title={"Copper"}
@@ -388,7 +388,7 @@ export default function App() {
             onChange={(value: number) => {
               SetCopperAmount(value);
             }}
-            max={10000}
+            max={100000}
           />
           <NumericInput
             title={"Iron"}
@@ -398,7 +398,7 @@ export default function App() {
             onChange={(value: number) => {
               setIronAmount(value);
             }}
-            max={10000}
+            max={100000}
           />
           <NumericInput
             title={"Coal"}
@@ -408,7 +408,7 @@ export default function App() {
             onChange={(value: number) => {
               setCoalAmount(value);
             }}
-            max={10000}
+            max={100000}
           />
           <NumericInput
             title={"Wolframite"}
@@ -418,7 +418,7 @@ export default function App() {
             onChange={(value: number) => {
               setWolframiteAmount(value);
             }}
-            max={10000}
+            max={100000}
           />
         </View>
       <View style={{ alignItems: "center" }}>

@@ -115,7 +115,7 @@ export const allItems = [
   },
   {
     name: "Tungsten Ore",
-    itemsPerMin: 30,
+    itemsPerMin: 24,
     building: "Furnace",
     value: 5,
     ingredientList: [{ name: "Wolframite", amount: 5 }],

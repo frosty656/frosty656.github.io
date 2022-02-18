@@ -30,12 +30,17 @@ export default function NumbericInput({
   min = 1,
   showButtons = true,
   stepSize = 1,
+  updateOnStateChange = false,
   ...otherProps
 }) {
   const [lastValue, setLastValue] = React.useState("");
   const [currentValue, setCurrentValue] = React.useState(value);
 
-  useEffect(() => {setCurrentValue(value)}, [value])
+  useEffect(() => {
+    if(updateOnStateChange) {
+      setCurrentValue(value)
+    }
+  }, [value])
 
   useEffect(() => {
     if (currentValue.slice(-1) != ".") {
