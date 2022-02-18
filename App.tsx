@@ -381,6 +381,16 @@ export default function App() {
             max={10000}
           />
           <NumericInput
+            title={"Copper"}
+            width={100}
+            height={30}
+            value={copperAmount.toString()}
+            onChange={(value: number) => {
+              SetCopperAmount(value);
+            }}
+            max={10000}
+          />
+          <NumericInput
             title={"Iron"}
             width={100}
             height={30}
