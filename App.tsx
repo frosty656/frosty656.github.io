@@ -427,19 +427,6 @@ export default function App() {
         </View>
     )
   }
-
-  function resourceInputType(){
-    if(inputResourcesByAmount){
-      return (
-        enterTotalResourceAmount()
-      )
-    } else {
-      return(
-        enterTotalExtractorAmount()
-      )
-    }
-  }
-
   return (
     <View style={{ alignItems: "center" }}>
       <View style={{ flexDirection: "row", alignItems: "center", padding: 5, flexWrap: 'wrap', justifyContent: 'center'  }}>
@@ -515,7 +502,9 @@ export default function App() {
         />
       </View>
       <Button title={inputResourcesByAmount ? "Change to extractor count" : "Change to resource count"} onPress={()=> {setInputResourcesByAmount(!inputResourcesByAmount)}}/>
-      {resourceInputType()}
+      {inputResourcesByAmount ? enterTotalResourceAmount() : null}
+      {inputResourcesByAmount ? null : enterTotalExtractorAmount()}
+
       <View style={{ alignItems: "center" }}>
         <View
           style={{ flexDirection: "row", alignItems: "center", padding: 10 }}
