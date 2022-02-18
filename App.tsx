@@ -1,6 +1,7 @@
 // https://www.npmjs.com/package/react-native-numeric-input
 import React, { useEffect, useState } from "react";
 import {
+  Button,
   StyleSheet,
   Text,
   TextInput,
@@ -47,6 +48,14 @@ export default function App() {
   const [copperAmount, SetCopperAmount] = useState(1000);
   const [wolframiteAmount, setWolframiteAmount] = useState(1000);
   const [coalAmount, setCoalAmount] = useState(1000);
+
+  const [inputResourcesByAmount, setInputResourcesByAmount] = useState(false);
+  const [woodExtractorAmount, setWoodExtractorAmount] = useState(50);
+  const [stoneExtractorAmount, setStoneExtractorAmount] = useState(50);
+  const [ironExtractorAmount, setIronExtractorAmount] = useState(50);
+  const [copperExtractorAmount, SetCopperExtractorAmount] = useState(50);
+  const [wolframiteExtractorAmount, setWolframiteExtractorAmount] = useState(50);
+  const [coalExtractorAmount, setCoalExtractorAmount] = useState(50);
 
   var ingList: Ingredient[] = [];
   var resourceCount: Resources[] = [];
@@ -285,6 +294,152 @@ export default function App() {
     );
   }
 
+  function enterTotalExtractorAmount(){
+    return (
+      <View style={{ flexDirection: "row", alignItems: "center", padding: 5, flexWrap: 'wrap', justifyContent: 'center' }}>
+        <NumericInput
+            title={"Wood Extractors"}
+            width={100}
+            height={30}
+            value={woodExtractorAmount.toString()}
+            onChange={(value: number) => {
+              setWoodExtractorAmount(value);
+            }}
+            max={1000}
+          />
+          <NumericInput
+            title={"Stone Extractors"}
+            width={100}
+            height={30}
+            value={stoneExtractorAmount.toString()}
+            onChange={(value: number) => {
+              setStoneExtractorAmount(value);
+            }}
+            max={1000}
+          />
+          <NumericInput
+            title={"Copper Extractors"}
+            width={100}
+            height={30}
+            value={copperExtractorAmount.toString()}
+            onChange={(value: number) => {
+              SetCopperExtractorAmount(value);
+            }}
+            max={1000}
+          />
+          <NumericInput
+            title={"Iron Extractors"}
+            width={100}
+            height={30}
+            value={ironExtractorAmount.toString()}
+            onChange={(value: number) => {
+              setIronExtractorAmount(value);
+            }}
+            max={1000}
+          />
+          <NumericInput
+            title={"Coal Extractors"}
+            width={100}
+            height={30}
+            value={coalExtractorAmount.toString()}
+            onChange={(value: number) => {
+              setCoalExtractorAmount(value);
+            }}
+            max={1000}
+          />
+          <NumericInput
+            title={"Wolframite Extractors"}
+            width={100}
+            height={30}
+            value={wolframiteExtractorAmount.toString()}
+            onChange={(value: number) => {
+              setWolframiteExtractorAmount(value);
+            }}
+            max={1000}
+          />
+        </View>
+    )
+  }
+
+  function enterTotalResourceAmount(){
+    return (
+      <View style={{ flexDirection: "row", alignItems: "center", padding: 5, flexWrap: 'wrap', justifyContent: 'center' }}>
+        <NumericInput
+            title={"Wood"}
+            width={100}
+            height={30}
+            value={woodAmount.toString()}
+            onChange={(value: number) => {
+              setWoodAmount(value);
+            }}
+            max={100000}
+          />
+          <NumericInput
+            title={"Stone"}
+            width={100}
+            height={30}
+            value={stoneAmount.toString()}
+            onChange={(value: number) => {
+              setStoneAmount(value);
+            }}
+            max={100000}
+          />
+          <NumericInput
+            title={"Copper"}
+            width={100}
+            height={30}
+            value={copperAmount.toString()}
+            onChange={(value: number) => {
+              SetCopperAmount(value);
+            }}
+            max={100000}
+          />
+          <NumericInput
+            title={"Iron"}
+            width={100}
+            height={30}
+            value={ironAmount.toString()}
+            onChange={(value: number) => {
+              setIronAmount(value);
+            }}
+            max={100000}
+          />
+          <NumericInput
+            title={"Coal"}
+            width={100}
+            height={30}
+            value={coalAmount.toString()}
+            onChange={(value: number) => {
+              setCoalAmount(value);
+            }}
+            max={100000}
+          />
+          <NumericInput
+            title={"Wolframite"}
+            width={100}
+            height={30}
+            value={wolframiteAmount.toString()}
+            onChange={(value: number) => {
+              setWolframiteAmount(value);
+            }}
+            max={100000}
+          />
+        </View>
+    )
+  }
+
+  function resourceInputType(){
+    if(inputResourcesByAmount){
+      return (
+        enterTotalResourceAmount()
+      )
+    } else {
+      return(
+        enterTotalExtractorAmount()
+      )
+    }
+  }
+
   return (
     <View style={{ alignItems: "center" }}>
       <View style={{ flexDirection: "row", alignItems: "center", padding: 5, flexWrap: 'wrap', justifyContent: 'center'  }}>
@@ -359,68 +514,8 @@ export default function App() {
           max={4}
         />
       </View>
-      <View style={{ flexDirection: "row", alignItems: "center", padding: 5, flexWrap: 'wrap', justifyContent: 'center' }}>
-        <NumericInput
-            title={"Wood"}
-            width={100}
-            height={30}
-            value={woodAmount.toString()}
-            onChange={(value: number) => {
-              setWoodAmount(value);
-            }}
-            max={100000}
-          />
-          <NumericInput
-            title={"Stone"}
-            width={100}
-            height={30}
-            value={stoneAmount.toString()}
-            onChange={(value: number) => {
-              setStoneAmount(value);
-            }}
-            max={100000}
-          />
-          <NumericInput
-            title={"Copper"}
-            width={100}
-            height={30}
-            value={copperAmount.toString()}
-            onChange={(value: number) => {
-              SetCopperAmount(value);
-            }}
-            max={100000}
-          />
-          <NumericInput
-            title={"Iron"}
-            width={100}
-            height={30}
-            value={ironAmount.toString()}
-            onChange={(value: number) => {
-              setIronAmount(value);
-            }}
-            max={100000}
-          />
-          <NumericInput
-            title={"Coal"}
-            width={100}
-            height={30}
-            value={coalAmount.toString()}
-            onChange={(value: number) => {
-              setCoalAmount(value);
-            }}
-            max={100000}
-          />
-          <NumericInput
-            title={"Wolframite"}
-            width={100}
-            height={30}
-            value={wolframiteAmount.toString()}
-            onChange={(value: number) => {
-              setWolframiteAmount(value);
-            }}
-            max={100000}
-          />
-        </View>
+      <Button title={inputResourcesByAmount ? "Change to extractor count" : "Change to resource count"} onPress={()=> {setInputResourcesByAmount(!inputResourcesByAmount)}}/>
+      {resourceInputType()}
       <View style={{ alignItems: "center" }}>
         <View
           style={{ flexDirection: "row", alignItems: "center", padding: 10 }}
