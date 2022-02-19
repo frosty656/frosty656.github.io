@@ -42,19 +42,12 @@ export default function App() {
   const [rawResources, setRawResources] = useState<Resources[]>([]);
 
   const [maxItemPerMin, setMaxItemPerMin] = useState(0);
-  const [woodAmount, setWoodAmount] = useState(1000);
-  const [stoneAmount, setStoneAmount] = useState(1000);
-  const [ironAmount, setIronAmount] = useState(1000);
-  const [copperAmount, SetCopperAmount] = useState(1000);
-  const [wolframiteAmount, setWolframiteAmount] = useState(1000);
-  const [coalAmount, setCoalAmount] = useState(1000);
-
-  const [inputResourcesByAmount, setInputResourcesByAmount] = useState(false);
   const [woodExtractorAmount, setWoodExtractorAmount] = useState(50);
   const [stoneExtractorAmount, setStoneExtractorAmount] = useState(50);
   const [ironExtractorAmount, setIronExtractorAmount] = useState(50);
   const [copperExtractorAmount, SetCopperExtractorAmount] = useState(50);
-  const [wolframiteExtractorAmount, setWolframiteExtractorAmount] = useState(50);
+  const [wolframiteExtractorAmount, setWolframiteExtractorAmount] =
+    useState(50);
   const [coalExtractorAmount, setCoalExtractorAmount] = useState(50);
 
   var ingList: Ingredient[] = [];
@@ -109,7 +102,15 @@ export default function App() {
     });
 
     setMaxItemPerMin(maxOutput * amount);
-  }, [rawResources, woodAmount, stoneAmount, ironAmount, copperAmount, coalAmount, wolframiteAmount]);
+  }, [
+    rawResources,
+    woodExtractorAmount,
+    stoneExtractorAmount,
+    ironExtractorAmount,
+    copperExtractorAmount,
+    wolframiteExtractorAmount,
+    coalExtractorAmount,
+  ]);
 
   const addIng = (
     name: string,
@@ -144,20 +145,40 @@ export default function App() {
     });
   };
 
+  function extractorOutput(level: number) {
+    switch (level) {
+      case 1:
+        return 7.5;
+      case 2:
+        return 11.25;
+      case 3:
+        return 15;
+      case 4:
+        return 22.5;
+      case 5:
+        return 30;
+      default:
+        return 7.5;
+    }
+  }
+
   function getResourceAmount(name: string) {
+    let outputPerExtractor = Number(
+      extractorOutput(getBuildingLevel("extractor"))
+    );
     switch (name.toLowerCase()) {
       case "wood log":
-        return woodAmount;
+        return outputPerExtractor * woodExtractorAmount;
       case "stone":
-        return stoneAmount;
+        return outputPerExtractor * stoneExtractorAmount;
       case "iron ore":
-        return ironAmount;
+        return outputPerExtractor * ironExtractorAmount;
       case "copper ore":
-        return copperAmount;
+        return outputPerExtractor * copperExtractorAmount;
       case "wolframite":
-        return wolframiteAmount;
+        return outputPerExtractor * wolframiteExtractorAmount;
       case "coal":
-        return coalAmount;
+        return outputPerExtractor * coalExtractorAmount;
       default:
         return 0;
     }
@@ -180,6 +201,8 @@ export default function App() {
       case "extractor":
         return extractorLevel;
       case "earth transporter":
+        return 1;
+      default:
         return 1;
     }
   }
@@ -250,7 +273,7 @@ export default function App() {
           }
           return (
             <Text style={{ paddingLeft: data.depth * 10 }}>
-              {data.amount} {data.name} ({data.numberOfBuildings}{" "}
+              {data.amount.toFixed(2)} {data.name} ({data.numberOfBuildings}{" "}
               {data.building})
             </Text>
           );
@@ -285,8 +308,8 @@ export default function App() {
             const numberOfBuildings = data.Amount / itemsPerMin / multiplier;
             return (
               <Text>
-                {data.Name}: {data.Amount} ({Math.ceil(numberOfBuildings)}{" "}
-                {data.Building})
+                {data.Name}: {data.Amount.toFixed(2)} (
+                {Math.ceil(numberOfBuildings)} {data.Building})
               </Text>
             );
           })}
@@ -294,142 +317,92 @@ export default function App() {
     );
   }
 
-  function enterTotalExtractorAmount(){
+  function enterTotalExtractorAmount() {
     return (
-      <View style={{ flexDirection: "row", alignItems: "center", padding: 5, flexWrap: 'wrap', justifyContent: 'center' }}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          padding: 5,
+          flexWrap: "wrap",
+          justifyContent: "center",
+        }}
+      >
         <NumericInput
-            title={"Wood Extractors"}
-            width={100}
-            height={30}
-            value={woodExtractorAmount.toString()}
-            onChange={(value: number) => {
-              setWoodExtractorAmount(value);
-            }}
-            max={1000}
-          />
-          <NumericInput
-            title={"Stone Extractors"}
-            width={100}
-            height={30}
-            value={stoneExtractorAmount.toString()}
-            onChange={(value: number) => {
-              setStoneExtractorAmount(value);
-            }}
-            max={1000}
-          />
-          <NumericInput
-            title={"Copper Extractors"}
-            width={100}
-            height={30}
-            value={copperExtractorAmount.toString()}
-            onChange={(value: number) => {
-              SetCopperExtractorAmount(value);
-            }}
-            max={1000}
-          />
-          <NumericInput
-            title={"Iron Extractors"}
-            width={100}
-            height={30}
-            value={ironExtractorAmount.toString()}
-            onChange={(value: number) => {
-              setIronExtractorAmount(value);
-            }}
-            max={1000}
-          />
-          <NumericInput
-            title={"Coal Extractors"}
-            width={100}
-            height={30}
-            value={coalExtractorAmount.toString()}
-            onChange={(value: number) => {
-              setCoalExtractorAmount(value);
-            }}
-            max={1000}
-          />
-          <NumericInput
-            title={"Wolframite Extractors"}
-            width={100}
-            height={30}
-            value={wolframiteExtractorAmount.toString()}
-            onChange={(value: number) => {
-              setWolframiteExtractorAmount(value);
-            }}
-            max={1000}
-          />
-        </View>
-    )
+          title={"Wood Extractors"}
+          width={100}
+          height={30}
+          value={woodExtractorAmount.toString()}
+          onChange={(value: number) => {
+            setWoodExtractorAmount(value);
+          }}
+          max={1000}
+        />
+        <NumericInput
+          title={"Stone Extractors"}
+          width={100}
+          height={30}
+          value={stoneExtractorAmount.toString()}
+          onChange={(value: number) => {
+            setStoneExtractorAmount(value);
+          }}
+          max={1000}
+        />
+        <NumericInput
+          title={"Copper Extractors"}
+          width={100}
+          height={30}
+          value={copperExtractorAmount.toString()}
+          onChange={(value: number) => {
+            SetCopperExtractorAmount(value);
+          }}
+          max={1000}
+        />
+        <NumericInput
+          title={"Iron Extractors"}
+          width={100}
+          height={30}
+          value={ironExtractorAmount.toString()}
+          onChange={(value: number) => {
+            setIronExtractorAmount(value);
+          }}
+          max={1000}
+        />
+        <NumericInput
+          title={"Coal Extractors"}
+          width={100}
+          height={30}
+          value={coalExtractorAmount.toString()}
+          onChange={(value: number) => {
+            setCoalExtractorAmount(value);
+          }}
+          max={1000}
+        />
+        <NumericInput
+          title={"Wolframite Extractors"}
+          width={100}
+          height={30}
+          value={wolframiteExtractorAmount.toString()}
+          onChange={(value: number) => {
+            setWolframiteExtractorAmount(value);
+          }}
+          max={1000}
+        />
+      </View>
+    );
   }
 
-  function enterTotalResourceAmount(){
-    return (
-      <View style={{ flexDirection: "row", alignItems: "center", padding: 5, flexWrap: 'wrap', justifyContent: 'center' }}>
-        <NumericInput
-            title={"Wood"}
-            width={100}
-            height={30}
-            value={woodAmount.toString()}
-            onChange={(value: number) => {
-              setWoodAmount(value);
-            }}
-            max={100000}
-          />
-          <NumericInput
-            title={"Stone"}
-            width={100}
-            height={30}
-            value={stoneAmount.toString()}
-            onChange={(value: number) => {
-              setStoneAmount(value);
-            }}
-            max={100000}
-          />
-          <NumericInput
-            title={"Copper"}
-            width={100}
-            height={30}
-            value={copperAmount.toString()}
-            onChange={(value: number) => {
-              SetCopperAmount(value);
-            }}
-            max={100000}
-          />
-          <NumericInput
-            title={"Iron"}
-            width={100}
-            height={30}
-            value={ironAmount.toString()}
-            onChange={(value: number) => {
-              setIronAmount(value);
-            }}
-            max={100000}
-          />
-          <NumericInput
-            title={"Coal"}
-            width={100}
-            height={30}
-            value={coalAmount.toString()}
-            onChange={(value: number) => {
-              setCoalAmount(value);
-            }}
-            max={100000}
-          />
-          <NumericInput
-            title={"Wolframite"}
-            width={100}
-            height={30}
-            value={wolframiteAmount.toString()}
-            onChange={(value: number) => {
-              setWolframiteAmount(value);
-            }}
-            max={100000}
-          />
-        </View>
-    )
-  }
   return (
     <View style={{ alignItems: "center" }}>
-      <View style={{ flexDirection: "row", alignItems: "center", padding: 5, flexWrap: 'wrap', justifyContent: 'center'  }}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          padding: 5,
+          flexWrap: "wrap",
+          justifyContent: "center",
+        }}
+      >
         <NumericInput
           title={"Extractor"}
           width={100}
@@ -501,9 +474,7 @@ export default function App() {
           max={4}
         />
       </View>
-      <Button title={inputResourcesByAmount ? "Change to extractor count" : "Change to resource count"} onPress={()=> {setInputResourcesByAmount(!inputResourcesByAmount)}}/>
-      {inputResourcesByAmount ? enterTotalResourceAmount() : null}
-      {inputResourcesByAmount ? null : enterTotalExtractorAmount()}
+      {enterTotalExtractorAmount()}
 
       <View style={{ alignItems: "center" }}>
         <View
@@ -511,21 +482,22 @@ export default function App() {
         >
           <View>
             <Text>Max Output</Text>
-          <TouchableOpacity 
-          style={{
-            height: 45,
-            width: 100,
-            borderColor: "black",
-            borderRadius: 5,
-            borderWidth: 1,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          onPress={() => setAmount(maxItemPerMin)}>
-            <Text style={{fontSize: 8}}>(Press Me)</Text>
-          <Text>{maxItemPerMin.toFixed(2)}</Text>
-        </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              style={{
+                height: 45,
+                width: 100,
+                borderColor: "black",
+                borderRadius: 5,
+                borderWidth: 1,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              onPress={() => setAmount(maxItemPerMin)}
+            >
+              <Text style={{ fontSize: 8 }}>(Press Me)</Text>
+              <Text>{maxItemPerMin.toFixed(2)}</Text>
+            </TouchableOpacity>
+          </View>
           <NumericInput
             title={"Items/Min"}
             width={150}
@@ -536,6 +508,7 @@ export default function App() {
             }}
             max={10000}
             showButtons={false}
+            updateOnStateChange={true}
           />
           <View style={{ width: 5 }} />
 
@@ -636,10 +609,10 @@ const styles = StyleSheet.create({
     height: 30,
   },
   inputContainer: {
-    lexDirection: "row", 
-    alignItems: "center", 
-    padding: 5, 
-    flexWrap: 'wrap', 
-    justifyContent: 'center'
+    lexDirection: "row",
+    alignItems: "center",
+    padding: 5,
+    flexWrap: "wrap",
+    justifyContent: "center",
   },
 });

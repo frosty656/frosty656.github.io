@@ -37,10 +37,10 @@ export default function NumbericInput({
   const [currentValue, setCurrentValue] = React.useState(value);
 
   useEffect(() => {
-    if(updateOnStateChange) {
-      setCurrentValue(value)
+    if (updateOnStateChange) {
+      setCurrentValue(value);
     }
-  }, [value])
+  }, [value]);
 
   useEffect(() => {
     if (currentValue.slice(-1) != ".") {
@@ -50,6 +50,11 @@ export default function NumbericInput({
 
   function getNumericInput(text: string) {
     {
+      if (text.length == 0 && updateOnStateChange) {
+        setLastValue("");
+        setCurrentValue("0");
+        return;
+      }
       let sanitizedString = "";
       let hasDecimal = false;
       text.split("").forEach((char) => {
@@ -62,14 +67,19 @@ export default function NumbericInput({
           } else {
             sanitizedString += char;
           }
-          if (Number(sanitizedString) > max) {
-            sanitizedString = max.toString();
-          }
-          if (Number(sanitizedString) < min) {
-            sanitizedString = min.toString();
-          }
         }
       });
+      if (sanitizedString.length == 0) {
+        setCurrentValue("");
+        setLastValue("");
+        return;
+      }
+      if (Number(sanitizedString) > max) {
+        sanitizedString = max.toString();
+      }
+      if (Number(sanitizedString) < min) {
+        sanitizedString = min.toString();
+      }
       if (sanitizedString != lastValue) {
         setCurrentValue(sanitizedString);
         setLastValue(sanitizedString);
@@ -161,7 +171,13 @@ export default function NumbericInput({
   }
 
   return (
-    <View style={{ alignItems: "center", paddingHorizontal: 10, paddingVertical: 5 }}>
+    <View
+      style={{
+        alignItems: "center",
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+      }}
+    >
       <Text>{title}</Text>
       <View
         style={{
