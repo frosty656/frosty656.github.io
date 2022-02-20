@@ -1,14 +1,9 @@
 // https://www.npmjs.com/package/react-native-numeric-input
 import React, { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { allItems, resources } from "./ItemInfo";
 import { Picker } from "@react-native-picker/picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import NumericInput from "./Components/NumericInput";
 
@@ -41,15 +36,123 @@ export default function App() {
   const [rawResources, setRawResources] = useState<Resources[]>([]);
 
   const [maxItemPerMin, setMaxItemPerMin] = useState(0);
-  const [woodAmount, setWoodAmount] = useState(1000);
-  const [stoneAmount, setStoneAmount] = useState(1000);
-  const [ironAmount, setIronAmount] = useState(1000);
-  const [copperAmount, SetCopperAmount] = useState(1000);
-  const [wolframiteAmount, setWolframiteAmount] = useState(1000);
-  const [coalAmount, setCoalAmount] = useState(1000);
+  const [woodExtractorAmount, setWoodExtractorAmount] = useState(50);
+  const [stoneExtractorAmount, setStoneExtractorAmount] = useState(50);
+  const [ironExtractorAmount, setIronExtractorAmount] = useState(50);
+  const [copperExtractorAmount, SetCopperExtractorAmount] = useState(50);
+  const [wolframiteExtractorAmount, setWolframiteExtractorAmount] =
+    useState(50);
+  const [coalExtractorAmount, setCoalExtractorAmount] = useState(50);
 
   var ingList: Ingredient[] = [];
   var resourceCount: Resources[] = [];
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Onload
+  useEffect(() => {
+    console.log("getting data");
+    (async () => {
+      try {
+        const value = await AsyncStorage.getItem("@info");
+        if (value !== null) {
+          const info = JSON.parse(value);
+          console.log(info);
+          setWoodExtractorAmount(
+            info.woodExtractorAmount !== null ? info.woodExtractorAmount : 50
+          );
+          setStoneExtractorAmount(
+            info.stoneExtractorAmount !== null ? info.stoneExtractorAmount : 50
+          );
+          setIronExtractorAmount(
+            info.ironExtractorAmount !== null ? info.ironExtractorAmount : 50
+          );
+          SetCopperExtractorAmount(
+            info.copperExtractorAmount !== null
+              ? info.copperExtractorAmount
+              : 50
+          );
+          setWolframiteExtractorAmount(
+            info.wolframiteExtractorAmount !== null
+              ? info.wolframiteExtractorAmount
+              : 50
+          );
+          setCoalExtractorAmount(
+            info.coalExtractorAmount !== null ? info.coalExtractorAmount : 50
+          );
+          setWorkShopLevel(
+            info.workshopLevel !== null ? info.workshopLevel : 1
+          );
+          setFurnaceLevel(info.furnaceLevel !== null ? info.furnaceLevel : 1);
+          setMachineShopLevel(
+            info.machineShopLevel !== null ? info.machineShopLevel : 1
+          );
+          setIndustrialFactoryLevel(
+            info.industrialFactoryLevel !== null
+              ? info.industrialFactoryLevel
+              : 1
+          );
+          setForgeLevel(info.forgeLevel !== null ? info.forgeLevel : 1);
+          setManufacturerLevel(
+            info.manufacturerLevel !== null ? info.manufacturerLevel : 1
+          );
+          setExtractorLevel(
+            info.extractorLevel !== null ? info.extractorLevel : 1
+          );
+        }
+      } catch (e) {
+        console.log("Error: " + e);
+      }
+      setIsLoading(false);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (isLoading) {
+      console.log("Still loading");
+      return;
+    }
+    console.log("Saving info");
+    const data = {
+      woodExtractorAmount: woodExtractorAmount,
+      stoneExtractorAmount: stoneExtractorAmount,
+      ironExtractorAmount: ironExtractorAmount,
+      copperExtractorAmount: copperExtractorAmount,
+      wolframiteExtractorAmount: wolframiteExtractorAmount,
+      coalExtractorAmount: coalExtractorAmount,
+      extractorLevel: extractorLevel,
+      workshopLevel: workshopLevel,
+      furnaceLevel: furnaceLevel,
+      machineShopLevel: machineShopLevel,
+      industrialFactoryLevel: industrialFactoryLevel,
+      forgeLevel: forgeLevel,
+      manufacturerLevel: manufacturerLevel,
+    };
+
+    (async () => {
+      try {
+        console.log(data);
+        await AsyncStorage.setItem("@info", JSON.stringify(data));
+      } catch (e) {
+        console.log("Error saving data " + e);
+      }
+    })();
+  }),
+    [
+      woodExtractorAmount,
+      stoneExtractorAmount,
+      ironExtractorAmount,
+      copperExtractorAmount,
+      wolframiteExtractorAmount,
+      coalExtractorAmount,
+      extractorLevel,
+      workshopLevel,
+      furnaceLevel,
+      machineShopLevel,
+      industrialFactoryLevel,
+      forgeLevel,
+      manufacturerLevel,
+    ];
 
   // If any params are updated then we want to recalculate the list
   useEffect(() => {
@@ -99,8 +202,16 @@ export default function App() {
       }
     });
 
-    setMaxItemPerMin(maxOutput * amount);
-  }, [rawResources, woodAmount, stoneAmount, ironAmount, copperAmount, coalAmount, wolframiteAmount]);
+    setMaxItemPerMin(Number((maxOutput * amount).toFixed(4)));
+  }, [
+    rawResources,
+    woodExtractorAmount,
+    stoneExtractorAmount,
+    ironExtractorAmount,
+    copperExtractorAmount,
+    wolframiteExtractorAmount,
+    coalExtractorAmount,
+  ]);
 
   const addIng = (
     name: string,
@@ -135,20 +246,40 @@ export default function App() {
     });
   };
 
+  function extractorOutput(level: number) {
+    switch (level) {
+      case 1:
+        return 7.5;
+      case 2:
+        return 11.25;
+      case 3:
+        return 15;
+      case 4:
+        return 22.5;
+      case 5:
+        return 30;
+      default:
+        return 7.5;
+    }
+  }
+
   function getResourceAmount(name: string) {
+    let outputPerExtractor = Number(
+      extractorOutput(getBuildingLevel("extractor"))
+    );
     switch (name.toLowerCase()) {
       case "wood log":
-        return woodAmount;
+        return outputPerExtractor * woodExtractorAmount;
       case "stone":
-        return stoneAmount;
+        return outputPerExtractor * stoneExtractorAmount;
       case "iron ore":
-        return ironAmount;
+        return outputPerExtractor * ironExtractorAmount;
       case "copper ore":
-        return copperAmount;
+        return outputPerExtractor * copperExtractorAmount;
       case "wolframite":
-        return wolframiteAmount;
+        return outputPerExtractor * wolframiteExtractorAmount;
       case "coal":
-        return coalAmount;
+        return outputPerExtractor * coalExtractorAmount;
       default:
         return 0;
     }
@@ -171,6 +302,8 @@ export default function App() {
       case "extractor":
         return extractorLevel;
       case "earth transporter":
+        return 1;
+      default:
         return 1;
     }
   }
@@ -241,7 +374,7 @@ export default function App() {
           }
           return (
             <Text style={{ paddingLeft: data.depth * 10 }}>
-              {data.amount} {data.name} ({data.numberOfBuildings}{" "}
+              {data.amount.toFixed(2)} {data.name} ({data.numberOfBuildings}{" "}
               {data.building})
             </Text>
           );
@@ -276,8 +409,8 @@ export default function App() {
             const numberOfBuildings = data.Amount / itemsPerMin / multiplier;
             return (
               <Text>
-                {data.Name}: {data.Amount} ({Math.ceil(numberOfBuildings)}{" "}
-                {data.Building})
+                {data.Name}: {data.Amount.toFixed(2)} (
+                {Math.ceil(numberOfBuildings)} {data.Building})
               </Text>
             );
           })}
@@ -285,248 +418,282 @@ export default function App() {
     );
   }
 
-  return (
-    <View style={{ alignItems: "center" }}>
-      <View style={{ flexDirection: "row", alignItems: "center", padding: 5, flexWrap: 'wrap', justifyContent: 'center'  }}>
-        <NumericInput
-          title={"Extractor"}
-          width={100}
-          height={30}
-          value={extractorLevel.toString()}
-          onChange={(value: number) => {
-            setExtractorLevel(value);
-          }}
-          max={5}
-        />
-        <NumericInput
-          title={"Workshop"}
-          width={100}
-          height={30}
-          value={workshopLevel.toString()}
-          onChange={(value: number) => {
-            setWorkShopLevel(value);
-          }}
-          max={4}
-        />
-        <NumericInput
-          title={"Furnace"}
-          width={100}
-          height={30}
-          value={furnaceLevel.toString()}
-          onChange={(value: number) => {
-            setFurnaceLevel(value);
-          }}
-          max={4}
-        />
-        <NumericInput
-          title={"Machine Shop"}
-          width={100}
-          height={30}
-          value={machineShopLevel.toString()}
-          onChange={(value: number) => {
-            setMachineShopLevel(value);
-          }}
-          max={4}
-        />
-        <NumericInput
-          title={"Industrial Factory"}
-          width={100}
-          height={30}
-          value={industrialFactoryLevel.toString()}
-          onChange={(value: number) => {
-            setIndustrialFactoryLevel(value);
-          }}
-          max={4}
-        />
-        <NumericInput
-          title={"Forge"}
-          width={100}
-          height={30}
-          value={forgeLevel.toString()}
-          onChange={(value: number) => {
-            setForgeLevel(value);
-          }}
-          max={4}
-        />
-        <NumericInput
-          title={"Manufacturer"}
-          width={100}
-          height={30}
-          value={manufacturerLevel.toString()}
-          onChange={(value: number) => {
-            setManufacturerLevel(value);
-          }}
-          max={4}
-        />
-      </View>
-      <View style={{ flexDirection: "row", alignItems: "center", padding: 5, flexWrap: 'wrap', justifyContent: 'center' }}>
-        <NumericInput
-            title={"Wood"}
-            width={100}
-            height={30}
-            value={woodAmount.toString()}
-            onChange={(value: number) => {
-              setWoodAmount(value);
-            }}
-            max={100000}
-          />
-          <NumericInput
-            title={"Stone"}
-            width={100}
-            height={30}
-            value={stoneAmount.toString()}
-            onChange={(value: number) => {
-              setStoneAmount(value);
-            }}
-            max={100000}
-          />
-          <NumericInput
-            title={"Copper"}
-            width={100}
-            height={30}
-            value={copperAmount.toString()}
-            onChange={(value: number) => {
-              SetCopperAmount(value);
-            }}
-            max={100000}
-          />
-          <NumericInput
-            title={"Iron"}
-            width={100}
-            height={30}
-            value={ironAmount.toString()}
-            onChange={(value: number) => {
-              setIronAmount(value);
-            }}
-            max={100000}
-          />
-          <NumericInput
-            title={"Coal"}
-            width={100}
-            height={30}
-            value={coalAmount.toString()}
-            onChange={(value: number) => {
-              setCoalAmount(value);
-            }}
-            max={100000}
-          />
-          <NumericInput
-            title={"Wolframite"}
-            width={100}
-            height={30}
-            value={wolframiteAmount.toString()}
-            onChange={(value: number) => {
-              setWolframiteAmount(value);
-            }}
-            max={100000}
-          />
-        </View>
-      <View style={{ alignItems: "center" }}>
-        <View
-          style={{ flexDirection: "row", alignItems: "center", padding: 10 }}
-        >
-          <View>
-            <Text>Max Output</Text>
-          <TouchableOpacity 
-          style={{
-            height: 45,
-            width: 100,
-            borderColor: "black",
-            borderRadius: 5,
-            borderWidth: 1,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          onPress={() => setAmount(maxItemPerMin)}>
-            <Text style={{fontSize: 8}}>(Press Me)</Text>
-          <Text>{maxItemPerMin.toFixed(2)}</Text>
-        </TouchableOpacity>
-        </View>
-          <NumericInput
-            title={"Items/Min"}
-            width={150}
-            height={45}
-            value={amount.toString()}
-            onChange={(value: number) => {
-              setAmount(value);
-            }}
-            max={10000}
-            showButtons={false}
-          />
-          <View style={{ width: 5 }} />
-
-          <Picker
-            style={{
-              width: 100,
-              padding: 10,
-              borderWidth: 1,
-              borderColor: "#666",
-              borderRadius: 5,
-              height: 40,
-            }}
-            selectedValue={currentItem}
-            onValueChange={(itemValue, itemIndex) => setCurrentItem(itemValue)}
-            itemStyle={{ borderColor: "red", borderWidth: 2, borderRadius: 5 }}
-          >
-            {allItems
-              .sort((a, b) => {
-                return a.name.localeCompare(b.name);
-              })
-              .map((data) => {
-                return <Picker.Item label={data.name} value={data.name} />;
-              })}
-          </Picker>
-        </View>
-      </View>
-
+  function enterTotalExtractorAmount() {
+    return (
       <View
         style={{
           flexDirection: "row",
-          width: 500,
-          alignSelf: "center",
+          alignItems: "center",
+          padding: 5,
+          flexWrap: "wrap",
           justifyContent: "center",
         }}
       >
-        <TouchableOpacity
-          style={{
-            height: 50,
-            width: "25%",
-            borderColor: "black",
-            borderRadius: 5,
-            borderWidth: 1,
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: treeView ? "#D3D3D3" : "white",
+        <NumericInput
+          title={"Wood Extractors"}
+          width={100}
+          height={30}
+          value={woodExtractorAmount.toString()}
+          onChange={(value: number) => {
+            setWoodExtractorAmount(value);
           }}
-          onPress={() => {
-            setTreeView(true);
+          max={1000}
+        />
+        <NumericInput
+          title={"Stone Extractors"}
+          width={100}
+          height={30}
+          value={stoneExtractorAmount.toString()}
+          onChange={(value: number) => {
+            setStoneExtractorAmount(value);
           }}
-        >
-          <Text style={{ padding: 5 }}>Tree View</Text>
-        </TouchableOpacity>
-        <View style={{ width: 5 }} />
-        <TouchableOpacity
-          style={{
-            height: 50,
-            width: "25%",
-            borderColor: "black",
-            borderRadius: 5,
-            borderWidth: 1,
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: !treeView ? "#D3D3D3" : "white",
+          max={1000}
+        />
+        <NumericInput
+          title={"Copper Extractors"}
+          width={100}
+          height={30}
+          value={copperExtractorAmount.toString()}
+          onChange={(value: number) => {
+            SetCopperExtractorAmount(value);
           }}
-          onPress={() => {
-            setTreeView(false);
+          max={1000}
+        />
+        <NumericInput
+          title={"Iron Extractors"}
+          width={100}
+          height={30}
+          value={ironExtractorAmount.toString()}
+          onChange={(value: number) => {
+            setIronExtractorAmount(value);
           }}
-        >
-          <Text style={{ padding: 5 }}>Summary View</Text>
-        </TouchableOpacity>
+          max={1000}
+        />
+        <NumericInput
+          title={"Coal Extractors"}
+          width={100}
+          height={30}
+          value={coalExtractorAmount.toString()}
+          onChange={(value: number) => {
+            setCoalExtractorAmount(value);
+          }}
+          max={1000}
+        />
+        <NumericInput
+          title={"Wolframite Extractors"}
+          width={100}
+          height={30}
+          value={wolframiteExtractorAmount.toString()}
+          onChange={(value: number) => {
+            setWolframiteExtractorAmount(value);
+          }}
+          max={1000}
+        />
       </View>
-      {treeView ? renderList() : renderIngList()}
-      <View style={{ height: 50 }} />
-    </View>
-  );
+    );
+  }
+  if (!isLoading) {
+    return (
+      <View style={{ alignItems: "center" }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            padding: 5,
+            flexWrap: "wrap",
+            justifyContent: "center",
+          }}
+        >
+          <NumericInput
+            title={"Extractor"}
+            width={100}
+            height={30}
+            value={extractorLevel.toString()}
+            onChange={(value: number) => {
+              setExtractorLevel(value);
+            }}
+            max={5}
+          />
+          <NumericInput
+            title={"Workshop"}
+            width={100}
+            height={30}
+            value={workshopLevel.toString()}
+            onChange={(value: number) => {
+              setWorkShopLevel(value);
+            }}
+            max={4}
+          />
+          <NumericInput
+            title={"Furnace"}
+            width={100}
+            height={30}
+            value={furnaceLevel.toString()}
+            onChange={(value: number) => {
+              setFurnaceLevel(value);
+            }}
+            max={4}
+          />
+          <NumericInput
+            title={"Machine Shop"}
+            width={100}
+            height={30}
+            value={machineShopLevel.toString()}
+            onChange={(value: number) => {
+              setMachineShopLevel(value);
+            }}
+            max={4}
+          />
+          <NumericInput
+            title={"Industrial Factory"}
+            width={100}
+            height={30}
+            value={industrialFactoryLevel.toString()}
+            onChange={(value: number) => {
+              setIndustrialFactoryLevel(value);
+            }}
+            max={4}
+          />
+          <NumericInput
+            title={"Forge"}
+            width={100}
+            height={30}
+            value={forgeLevel.toString()}
+            onChange={(value: number) => {
+              setForgeLevel(value);
+            }}
+            max={4}
+          />
+          <NumericInput
+            title={"Manufacturer"}
+            width={100}
+            height={30}
+            value={manufacturerLevel.toString()}
+            onChange={(value: number) => {
+              setManufacturerLevel(value);
+            }}
+            max={4}
+          />
+        </View>
+        {enterTotalExtractorAmount()}
+
+        <View style={{ alignItems: "center" }}>
+          <View
+            style={{ flexDirection: "row", alignItems: "center", padding: 10 }}
+          >
+            <View>
+              <Text>Max Output</Text>
+              <TouchableOpacity
+                style={{
+                  height: 45,
+                  width: 100,
+                  borderColor: "black",
+                  borderRadius: 5,
+                  borderWidth: 1,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                onPress={() => setAmount(maxItemPerMin)}
+              >
+                <Text style={{ fontSize: 8 }}>(Press Me)</Text>
+                <Text>{maxItemPerMin.toFixed(2)}</Text>
+              </TouchableOpacity>
+            </View>
+            <NumericInput
+              title={"Items/Min"}
+              width={250}
+              height={45}
+              value={amount.toString()}
+              onChange={(value: number) => {
+                setAmount(value);
+              }}
+              max={10000}
+              showButtons={false}
+              updateOnStateChange={true}
+            />
+            <View style={{ width: 5 }} />
+
+            <Picker
+              style={{
+                width: 100,
+                padding: 10,
+                borderWidth: 1,
+                borderColor: "#666",
+                borderRadius: 5,
+                height: 40,
+              }}
+              selectedValue={currentItem}
+              onValueChange={(itemValue, itemIndex) =>
+                setCurrentItem(itemValue)
+              }
+              itemStyle={{
+                borderColor: "red",
+                borderWidth: 2,
+                borderRadius: 5,
+              }}
+            >
+              {allItems
+                .sort((a, b) => {
+                  return a.name.localeCompare(b.name);
+                })
+                .map((data) => {
+                  return <Picker.Item label={data.name} value={data.name} />;
+                })}
+            </Picker>
+          </View>
+        </View>
+
+        <View
+          style={{
+            flexDirection: "row",
+            width: 500,
+            alignSelf: "center",
+            justifyContent: "center",
+          }}
+        >
+          <TouchableOpacity
+            style={{
+              height: 50,
+              width: "25%",
+              borderColor: "black",
+              borderRadius: 5,
+              borderWidth: 1,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: treeView ? "#D3D3D3" : "white",
+            }}
+            onPress={() => {
+              setTreeView(true);
+            }}
+          >
+            <Text style={{ padding: 5 }}>Tree View</Text>
+          </TouchableOpacity>
+          <View style={{ width: 5 }} />
+          <TouchableOpacity
+            style={{
+              height: 50,
+              width: "25%",
+              borderColor: "black",
+              borderRadius: 5,
+              borderWidth: 1,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: !treeView ? "#D3D3D3" : "white",
+            }}
+            onPress={() => {
+              setTreeView(false);
+            }}
+          >
+            <Text style={{ padding: 5 }}>Summary View</Text>
+          </TouchableOpacity>
+        </View>
+        {treeView ? renderList() : renderIngList()}
+        <View style={{ height: 50 }} />
+      </View>
+    );
+  } else {
+    return null;
+  }
 }
 
 const styles = StyleSheet.create({
@@ -552,10 +719,10 @@ const styles = StyleSheet.create({
     height: 30,
   },
   inputContainer: {
-    lexDirection: "row", 
-    alignItems: "center", 
-    padding: 5, 
-    flexWrap: 'wrap', 
-    justifyContent: 'center'
+    lexDirection: "row",
+    alignItems: "center",
+    padding: 5,
+    flexWrap: "wrap",
+    justifyContent: "center",
   },
 });
