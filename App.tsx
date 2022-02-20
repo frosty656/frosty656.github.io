@@ -579,7 +579,12 @@ export default function App() {
 
         <View style={{ alignItems: "center" }}>
           <View
-            style={{ flexDirection: "row", alignItems: "center", padding: 10 }}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              padding: 10,
+              justifyContent: "center",
+            }}
           >
             <View>
               <Text>Max Output</Text>
@@ -601,7 +606,7 @@ export default function App() {
             </View>
             <NumericInput
               title={"Items/Min"}
-              width={250}
+              width={125}
               height={45}
               value={amount.toString()}
               onChange={(value: number) => {
@@ -611,12 +616,11 @@ export default function App() {
               showButtons={false}
               updateOnStateChange={true}
             />
-            <View style={{ width: 5 }} />
 
             <Picker
               style={{
                 width: 100,
-                padding: 10,
+                padding: 5,
                 borderWidth: 1,
                 borderColor: "#666",
                 borderRadius: 5,
