@@ -156,7 +156,7 @@ export default function NumbericInput({
         <TextInput
           value={currentValue}
           style={{
-            width: width / 2,
+            width: width,
             textAlign: "center",
             borderColor: "#D3D3D3",
             borderWidth: 1,
