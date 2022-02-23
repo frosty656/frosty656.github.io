@@ -51,13 +51,11 @@ export default function App() {
 
   // Onload
   useEffect(() => {
-    console.log("getting data");
     (async () => {
       try {
         const value = await AsyncStorage.getItem("@info");
         if (value !== null) {
           const info = JSON.parse(value);
-          console.log(info);
           setWoodExtractorAmount(
             info.woodExtractorAmount !== null ? info.woodExtractorAmount : 50
           );
@@ -109,10 +107,8 @@ export default function App() {
 
   useEffect(() => {
     if (isLoading) {
-      console.log("Still loading");
       return;
     }
-    console.log("Saving info");
     const data = {
       woodExtractorAmount: woodExtractorAmount,
       stoneExtractorAmount: stoneExtractorAmount,
@@ -131,7 +127,6 @@ export default function App() {
 
     (async () => {
       try {
-        console.log(data);
         await AsyncStorage.setItem("@info", JSON.stringify(data));
       } catch (e) {
         console.log("Error saving data " + e);
@@ -337,6 +332,7 @@ export default function App() {
       const numberOfBuildings = Math.ceil(
         requireAmountPerMin / (7.5 * multiplier)
       );
+
       if (resources.includes(ingredient.name)) {
         addIng(
           ingredient.name,
@@ -384,7 +380,7 @@ export default function App() {
   }
 
   // We should give these elements an id
-  function renderIngList() {
+  function renderSummaryView() {
     return (
       <View style={{ alignItems: "flex-start" }}>
         {rawResources
@@ -392,10 +388,11 @@ export default function App() {
             return a.Name.localeCompare(b.Name);
           })
           .map((data) => {
+            // The amount of items that a single building can produce (at level 1)
             var itemsPerMin = 0;
+
             if (resources.includes(data.Name)) {
-              itemsPerMin =
-                7.5 * levelMultiplier(getBuildingLevel("extractor")!);
+              itemsPerMin = 7.5;
             } else {
               const ingInfo = allItems.find((item) => {
                 return item.name == data.Name;
@@ -403,10 +400,10 @@ export default function App() {
               itemsPerMin = ingInfo!.itemsPerMin;
             }
 
+            // Account for building levels increasing output
             const buildingLevel = getBuildingLevel(data.Building);
-
             const multiplier = levelMultiplier(buildingLevel!);
-            const numberOfBuildings = data.Amount / itemsPerMin / multiplier;
+            const numberOfBuildings = data.Amount / (itemsPerMin * multiplier);
             return (
               <Text>
                 {data.Name}: {data.Amount.toFixed(2)} (
@@ -691,7 +688,7 @@ export default function App() {
             <Text style={{ padding: 5 }}>Summary View</Text>
           </TouchableOpacity>
         </View>
-        {treeView ? renderList() : renderIngList()}
+        {treeView ? renderList() : renderSummaryView()}
         <View style={{ height: 50 }} />
       </View>
     );
