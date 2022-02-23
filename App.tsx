@@ -328,7 +328,10 @@ export default function App() {
     itemInfo?.ingredientList.forEach((ingredient) => {
       const requireAmountPerMin = ingredient.amount * amountPerMin;
       const buildingLevel = getBuildingLevel("extractor");
+      console.log("Building Level " + buildingLevel)
       const multiplier = levelMultiplier(buildingLevel!);
+      console.log("Multiplier " + multiplier)
+
       const numberOfBuildings = Math.ceil(
         requireAmountPerMin / (7.5 * multiplier)
       );
