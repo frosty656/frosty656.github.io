@@ -333,10 +333,15 @@ export default function App() {
     itemInfo?.ingredientList.forEach((ingredient) => {
       const requireAmountPerMin = ingredient.amount * amountPerMin;
       const buildingLevel = getBuildingLevel("extractor");
+      console.log("Building Level " + buildingLevel)
       const multiplier = levelMultiplier(buildingLevel!);
+      console.log("Multiplier " + multiplier)
+
       const numberOfBuildings = Math.ceil(
         requireAmountPerMin / (7.5 * multiplier)
       );
+      console.log("Number of buildings " + numberOfBuildings)
+
       if (resources.includes(ingredient.name)) {
         addIng(
           ingredient.name,
@@ -384,7 +389,7 @@ export default function App() {
   }
 
   // We should give these elements an id
-  function renderIngList() {
+  function renderSummaryView() {
     return (
       <View style={{ alignItems: "flex-start" }}>
         {rawResources
@@ -406,7 +411,7 @@ export default function App() {
             const buildingLevel = getBuildingLevel(data.Building);
 
             const multiplier = levelMultiplier(buildingLevel!);
-            const numberOfBuildings = data.Amount / itemsPerMin / multiplier;
+            const numberOfBuildings = data.Amount / (itemsPerMin * multiplier);
             return (
               <Text>
                 {data.Name}: {data.Amount.toFixed(2)} (
@@ -691,7 +696,7 @@ export default function App() {
             <Text style={{ padding: 5 }}>Summary View</Text>
           </TouchableOpacity>
         </View>
-        {treeView ? renderList() : renderIngList()}
+        {treeView ? renderList() : renderSummaryView()}
         <View style={{ height: 50 }} />
       </View>
     );
