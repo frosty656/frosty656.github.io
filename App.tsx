@@ -615,6 +615,7 @@ export default function App() {
               max={10000}
               showButtons={false}
               updateOnStateChange={true}
+              allowDecimal={true}
             />
 
             <Picker
