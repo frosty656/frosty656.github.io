@@ -31,6 +31,7 @@ export default function NumbericInput({
   showButtons = true,
   stepSize = 1,
   updateOnStateChange = false,
+  allowDecimal = false,
   ...otherProps
 }) {
   const [lastValue, setLastValue] = React.useState("");
@@ -164,7 +165,7 @@ export default function NumbericInput({
             borderRadius: 10,
           }}
           onChangeText={(text) => getNumericInput(text)}
-          keyboardType="numeric"
+          keyboardType={allowDecimal ? "decimal-pad" : "numeric"}
         />
       );
     }
