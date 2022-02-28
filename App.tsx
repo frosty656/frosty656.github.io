@@ -1,6 +1,6 @@
 // https://www.npmjs.com/package/react-native-numeric-input
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { allItems, resources } from "./ItemInfo";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -21,11 +21,12 @@ export default function App() {
     Amount: number;
     Building: string;
   }
-
   const [treeView, setTreeView] = useState(true);
   const [currentItem, setCurrentItem] = useState("Wood Plank");
   const [amount, setAmount] = useState(1);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [rawResources, setRawResources] = useState<Resources[]>([]);
+
   const [workshopLevel, setWorkShopLevel] = useState(1);
   const [furnaceLevel, setFurnaceLevel] = useState(1);
   const [machineShopLevel, setMachineShopLevel] = useState(1);
@@ -33,7 +34,7 @@ export default function App() {
   const [forgeLevel, setForgeLevel] = useState(1);
   const [manufacturerLevel, setManufacturerLevel] = useState(1);
   const [extractorLevel, setExtractorLevel] = useState(1);
-  const [rawResources, setRawResources] = useState<Resources[]>([]);
+  const [beltIPM, setBeltIPM] = useState(420);
 
   const [maxItemPerMin, setMaxItemPerMin] = useState(0);
   const [woodExtractorAmount, setWoodExtractorAmount] = useState(50);
@@ -43,6 +44,7 @@ export default function App() {
   const [wolframiteExtractorAmount, setWolframiteExtractorAmount] =
     useState(50);
   const [coalExtractorAmount, setCoalExtractorAmount] = useState(50);
+
 
   var ingList: Ingredient[] = [];
   var resourceCount: Resources[] = [];
@@ -374,7 +376,7 @@ export default function App() {
           return (
             <Text style={{ paddingLeft: data.depth * 10 }}>
               {data.amount.toFixed(2)} {data.name} ({data.numberOfBuildings}{" "}
-              {data.building})
+              {data.building}, {Math.ceil(data.amount / beltIPM)} belts out)
             </Text>
           );
         })}
@@ -486,6 +488,16 @@ export default function App() {
           value={wolframiteExtractorAmount.toString()}
           onChange={(value: number) => {
             setWolframiteExtractorAmount(value);
+          }}
+          max={1000}
+        />
+        <NumericInput
+          title={"Belt Items/Min"}
+          width={100}
+          height={30}
+          value={beltIPM.toString()}
+          onChange={(value: number) => {
+            setBeltIPM(value);
           }}
           max={1000}
         />
