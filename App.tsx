@@ -57,46 +57,44 @@ export default function App() {
         if (value !== null) {
           const info = JSON.parse(value);
           setWoodExtractorAmount(
-            info.woodExtractorAmount !== null ? info.woodExtractorAmount : 50
+            info.woodExtractorAmount ?? 50
           );
           setStoneExtractorAmount(
-            info.stoneExtractorAmount !== null ? info.stoneExtractorAmount : 50
+            info.stoneExtractorAmount ?? 50
           );
           setIronExtractorAmount(
-            info.ironExtractorAmount !== null ? info.ironExtractorAmount : 50
+            info.ironExtractorAmount ?? 50
           );
           SetCopperExtractorAmount(
-            info.copperExtractorAmount !== null
-              ? info.copperExtractorAmount
-              : 50
+            info.copperExtractorAmount ?? 50
           );
           setWolframiteExtractorAmount(
-            info.wolframiteExtractorAmount !== null
-              ? info.wolframiteExtractorAmount
-              : 50
+            info.wolframiteExtractorAmount ?? 50
           );
           setCoalExtractorAmount(
-            info.coalExtractorAmount !== null ? info.coalExtractorAmount : 50
+            info.coalExtractorAmount ?? 50
           );
           setWorkShopLevel(
-            info.workshopLevel !== null ? info.workshopLevel : 1
+            info.workshopLevel ?? 1
           );
-          setFurnaceLevel(info.furnaceLevel !== null ? info.furnaceLevel : 1);
+          setFurnaceLevel(info.furnaceLevel ?? 1);
           setMachineShopLevel(
-            info.machineShopLevel !== null ? info.machineShopLevel : 1
+            info.machineShopLevel ?? 1
           );
           setIndustrialFactoryLevel(
-            info.industrialFactoryLevel !== null
-              ? info.industrialFactoryLevel
-              : 1
+            info.industrialFactoryLevel ?? 1
           );
-          setForgeLevel(info.forgeLevel !== null ? info.forgeLevel : 1);
+          setForgeLevel(info.forgeLevel ?? 1);
           setManufacturerLevel(
-            info.manufacturerLevel !== null ? info.manufacturerLevel : 1
+            info.manufacturerLevel ?? 1
           );
           setExtractorLevel(
-            info.extractorLevel !== null ? info.extractorLevel : 1
+            info.extractorLevel ?? 1
           );
+          setAmount(
+            info.amount ?? 1
+          );
+          setCurrentItem(info.currentItem ?? "Wood Plank");
         }
       } catch (e) {
         console.log("Error: " + e);
@@ -123,6 +121,8 @@ export default function App() {
       industrialFactoryLevel: industrialFactoryLevel,
       forgeLevel: forgeLevel,
       manufacturerLevel: manufacturerLevel,
+      amount: amount,
+      currentItem: currentItem,
     };
 
     (async () => {
@@ -147,6 +147,8 @@ export default function App() {
       industrialFactoryLevel,
       forgeLevel,
       manufacturerLevel,
+      amount,
+      currentItem,
     ];
 
   // If any params are updated then we want to recalculate the list
