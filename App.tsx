@@ -7,6 +7,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import NumericInput from "./Components/NumericInput";
 
+// Test commit for jenkins
+
 export default function App() {
   interface Ingredient {
     name: string;
