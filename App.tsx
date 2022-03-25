@@ -47,7 +47,6 @@ export default function App() {
     useState(50);
   const [coalExtractorAmount, setCoalExtractorAmount] = useState(50);
 
-
   var ingList: Ingredient[] = [];
   var resourceCount: Resources[] = [];
 
@@ -60,44 +59,20 @@ export default function App() {
         const value = await AsyncStorage.getItem("@info");
         if (value !== null) {
           const info = JSON.parse(value);
-          setWoodExtractorAmount(
-            info.woodExtractorAmount ?? 50
-          );
-          setStoneExtractorAmount(
-            info.stoneExtractorAmount ?? 50
-          );
-          setIronExtractorAmount(
-            info.ironExtractorAmount ?? 50
-          );
-          SetCopperExtractorAmount(
-            info.copperExtractorAmount ?? 50
-          );
-          setWolframiteExtractorAmount(
-            info.wolframiteExtractorAmount ?? 50
-          );
-          setCoalExtractorAmount(
-            info.coalExtractorAmount ?? 50
-          );
-          setWorkShopLevel(
-            info.workshopLevel ?? 1
-          );
+          setWoodExtractorAmount(info.woodExtractorAmount ?? 50);
+          setStoneExtractorAmount(info.stoneExtractorAmount ?? 50);
+          setIronExtractorAmount(info.ironExtractorAmount ?? 50);
+          SetCopperExtractorAmount(info.copperExtractorAmount ?? 50);
+          setWolframiteExtractorAmount(info.wolframiteExtractorAmount ?? 50);
+          setCoalExtractorAmount(info.coalExtractorAmount ?? 50);
+          setWorkShopLevel(info.workshopLevel ?? 1);
           setFurnaceLevel(info.furnaceLevel ?? 1);
-          setMachineShopLevel(
-            info.machineShopLevel ?? 1
-          );
-          setIndustrialFactoryLevel(
-            info.industrialFactoryLevel ?? 1
-          );
+          setMachineShopLevel(info.machineShopLevel ?? 1);
+          setIndustrialFactoryLevel(info.industrialFactoryLevel ?? 1);
           setForgeLevel(info.forgeLevel ?? 1);
-          setManufacturerLevel(
-            info.manufacturerLevel ?? 1
-          );
-          setExtractorLevel(
-            info.extractorLevel ?? 1
-          );
-          setAmount(
-            info.amount ?? 1
-          );
+          setManufacturerLevel(info.manufacturerLevel ?? 1);
+          setExtractorLevel(info.extractorLevel ?? 1);
+          setAmount(info.amount ?? 1);
           setCurrentItem(info.currentItem ?? "Wood Plank");
         }
       } catch (e) {
@@ -334,9 +309,9 @@ export default function App() {
     itemInfo?.ingredientList.forEach((ingredient) => {
       const requireAmountPerMin = ingredient.amount * amountPerMin;
       const buildingLevel = getBuildingLevel("extractor");
-      console.log("Building Level " + buildingLevel)
+      console.log("Building Level " + buildingLevel);
       const multiplier = levelMultiplier(buildingLevel!);
-      console.log("Multiplier " + multiplier)
+      console.log("Multiplier " + multiplier);
 
       const numberOfBuildings = Math.ceil(
         requireAmountPerMin / (7.5 * multiplier)
@@ -629,6 +604,7 @@ export default function App() {
                 setAmount(value);
               }}
               max={10000}
+              min={0}
               showButtons={false}
               updateOnStateChange={true}
               allowDecimal={true}

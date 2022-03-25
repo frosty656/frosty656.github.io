@@ -56,12 +56,13 @@ export default function NumbericInput({
         setCurrentValue("0");
         return;
       }
+      console.log(text);
       let sanitizedString = "";
       let hasDecimal = false;
       text.split("").forEach((char) => {
         if ("1234567890.".includes(char)) {
           if (char == ".") {
-            if (!hasDecimal) {
+            if (!hasDecimal && allowDecimal) {
               hasDecimal = true;
               sanitizedString += char;
             }
@@ -81,6 +82,7 @@ export default function NumbericInput({
       if (Number(sanitizedString) < min) {
         sanitizedString = min.toString();
       }
+      console.log(sanitizedString);
       if (sanitizedString != lastValue) {
         setCurrentValue(sanitizedString);
         setLastValue(sanitizedString);
