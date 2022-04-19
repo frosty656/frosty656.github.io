@@ -51,6 +51,7 @@ export default function NumbericInput({
 
   function getNumericInput(text: string) {
     {
+      text = text.replaceAll(",", ".");
       if (text.length == 0 && updateOnStateChange) {
         setLastValue("");
         setCurrentValue("0");
