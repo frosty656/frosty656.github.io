@@ -74,6 +74,8 @@ export default function App() {
           setExtractorLevel(info.extractorLevel ?? 1);
           setAmount(info.amount ?? 1);
           setCurrentItem(info.currentItem ?? "Wood Plank");
+          setBeltIPM(info.beltIPM ?? 420);
+
         }
       } catch (e) {
         console.log("Error: " + e);
@@ -82,6 +84,7 @@ export default function App() {
     })();
   }, []);
 
+  // Onsave
   useEffect(() => {
     if (isLoading) {
       return;
@@ -102,6 +105,8 @@ export default function App() {
       manufacturerLevel: manufacturerLevel,
       amount: amount,
       currentItem: currentItem,
+      beltIPM: beltIPM,
+
     };
 
     (async () => {
@@ -128,6 +133,7 @@ export default function App() {
       manufacturerLevel,
       amount,
       currentItem,
+      beltIPM,
     ];
 
   // If any params are updated then we want to recalculate the list
