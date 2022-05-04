@@ -223,7 +223,7 @@ export default function App() {
       name: name,
       amount: amount,
       depth: depth,
-      numberOfBuildings: Math.ceil(numberOfBuildings),
+      numberOfBuildings: +(numberOfBuildings.toFixed(2)),
       building: building,
     });
   };
@@ -319,9 +319,9 @@ export default function App() {
       const multiplier = levelMultiplier(buildingLevel!);
       console.log("Multiplier " + multiplier);
 
-      const numberOfBuildings = Math.ceil(
+      const numberOfBuildings = +((
         requireAmountPerMin / (7.5 * multiplier)
-      );
+      ).toFixed(2));
 
       if (resources.includes(ingredient.name)) {
         addIng(
@@ -361,7 +361,7 @@ export default function App() {
           return (
             <Text style={{ paddingLeft: data.depth * 10 }}>
               {data.amount.toFixed(2)} {data.name} ({data.numberOfBuildings}{" "}
-              {data.building}, {Math.ceil(data.amount / beltIPM)} belts out)
+              {data.building}, {(data.amount / beltIPM).toFixed(2)} belts out)
             </Text>
           );
         })}
@@ -397,7 +397,7 @@ export default function App() {
             return (
               <Text>
                 {data.Name}: {data.Amount.toFixed(2)} (
-                {Math.ceil(numberOfBuildings)} {data.Building})
+                {(numberOfBuildings.toFixed(2))} {data.Building})
               </Text>
             );
           })}
