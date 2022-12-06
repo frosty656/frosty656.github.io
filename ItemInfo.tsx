@@ -7,6 +7,48 @@ export const resources = [
   "Wolframite",
 ];
 
+export const buildingLevelCost = {
+  "Workshop":{
+      "1": 10,
+      "2": 1000,
+      "3": 4000,
+      "4": 12000
+  },
+  "Furnace":{
+      "1": 30,
+      "2": 500,
+      "3": 800,
+      "4": 3200
+  },
+  "Machine Shop":{
+      "1": 100,
+      "2": 500,
+      "3": 2000,
+      "4": 8000
+  },
+  "Forge":{
+      "1": 100,
+      "2": 500,
+      "3": 2000,
+      "4": 10000
+  },
+  "Industrial Factory":{
+      "1": 300,
+      "2": 1000,
+      "3": 2000,
+      "4": 10000
+  },
+  "Manufacturer":{
+      "1": 1000,
+      "2": 4000,
+      "3": 20000,
+      "4": 80000
+  },
+  "Earth Transporter":{
+      "1": 100000
+  }
+}
+
 export const allItems = [
   {
     name: "Wood Plank",
