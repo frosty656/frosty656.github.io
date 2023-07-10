@@ -23,7 +23,7 @@ export default function App() {
     Amount: number;
     Building: string;
   }
-  const [treeView, setTreeView] = useState(true);
+  const [treeView, setTreeView] = useState('tree');
   const [currentItem, setCurrentItem] = useState("Wood Plank");
   const [amount, setAmount] = useState(1);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -78,7 +78,7 @@ export default function App() {
 
         }
       } catch (e) {
-        console.log("Error: " + e);
+        console.error("Error: " + e);
       }
       setIsLoading(false);
     })();
@@ -315,9 +315,7 @@ export default function App() {
     itemInfo?.ingredientList.forEach((ingredient) => {
       const requireAmountPerMin = ingredient.amount * amountPerMin;
       const buildingLevel = getBuildingLevel("extractor");
-      console.log("Building Level " + buildingLevel);
       const multiplier = levelMultiplier(buildingLevel!);
-      console.log("Multiplier " + multiplier);
 
       const numberOfBuildings = +((
         requireAmountPerMin / (7.5 * multiplier)
@@ -365,6 +363,101 @@ export default function App() {
             </Text>
           );
         })}
+      </View>
+    );
+  }
+
+  function renderTopologicalView() {
+    let dag = new Map<string, Resources[]>();
+    let stack: string[] = [];
+
+    ingredients.forEach((data) => {
+      if (!dag.has(data.name)) {
+        dag.set(data.name, []);
+      }
+
+      while (data.depth < stack.length) {
+        stack.pop();
+      }
+
+      if (stack.length > 0) {
+        let last = stack[stack.length - 1];
+        let dependencies = dag.get(last)!;
+
+        let dep = dependencies.find((dep) => dep.Name == data.name);
+
+        if (dep === undefined) {
+          dependencies.push({Name: data.name, Amount: data.amount, Building: ''});
+        } else {
+          dep.Amount += data.amount;
+        }
+      }
+
+      stack.push(data.name);
+    });
+
+    let order: string[] = [];
+
+    function dfs(node: string) {
+      if (order.findIndex((name) => name === node) !== -1) {
+        return;
+      }
+
+      let dependencies = dag.get(node)!;
+
+      dependencies.forEach((dependency) => {
+        dfs(dependency.Name);
+      });
+
+      order.push(node);
+    }
+
+    dfs(ingredients[0].name);
+    order = order.reverse();
+
+    return (
+      <View style={{ alignItems: "flex-start" }}>
+        {
+          order.map((name) => {
+            let data = rawResources.find((resource) => resource.Name == name)!;
+            // The amount of items that a single building can produce (at level 1)
+            var itemsPerMin = 0;
+
+            if (resources.includes(data.Name)) {
+              itemsPerMin = 7.5;
+            } else {
+              const ingInfo = allItems.find((item) => {
+                return item.name == data.Name;
+              });
+              itemsPerMin = ingInfo!.itemsPerMin;
+            }
+
+            // Account for building levels increasing output
+            const buildingLevel = getBuildingLevel(data.Building);
+            const multiplier = levelMultiplier(buildingLevel!);
+            const numberOfBuildings = data.Amount / (itemsPerMin * multiplier);
+
+            let dependencies = dag.get(name)!.map((dep) => {
+              let resource = rawResources.find((resource) => resource.Name == dep.Name)!;
+              let percent = dep.Amount / resource.Amount * 100;
+
+              return (<Text style={{paddingLeft:20}}>
+                {dep.Name}: {dep.Amount.toFixed(2)} ({percent.toFixed(2)}%, {(dep.Amount / beltIPM).toFixed(2)} belts in)
+              </Text>);
+            });
+
+            return (
+              <>
+              <Text>
+                {data.Name}: {data.Amount.toFixed(2)} (
+                {(numberOfBuildings.toFixed(2))} {data.Building}, {(data.Amount / beltIPM).toFixed(2)} belts out)
+              </Text>
+              {dependencies}
+              <Text>{' '}</Text>
+              </>
+            );
+          })
+          }
       </View>
     );
   }
@@ -490,6 +583,20 @@ export default function App() {
     );
   }
   if (!isLoading) {
+    let productionView;
+
+    switch (treeView) {
+      case 'topological':
+        productionView = renderTopologicalView();
+        break;
+      case 'summary':
+        productionView = renderSummaryView();
+        break;
+      default:
+        productionView = renderList();
+        break;
+    }
+
     return (
       <View style={{ alignItems: "center" }}>
         <View
@@ -663,10 +770,10 @@ export default function App() {
               borderWidth: 1,
               alignItems: "center",
               justifyContent: "center",
-              backgroundColor: treeView ? "#D3D3D3" : "white",
+              backgroundColor: treeView === 'tree' ? "#D3D3D3" : "white",
             }}
             onPress={() => {
-              setTreeView(true);
+              setTreeView('tree');
             }}
           >
             <Text style={{ padding: 5 }}>Tree View</Text>
@@ -681,16 +788,34 @@ export default function App() {
               borderWidth: 1,
               alignItems: "center",
               justifyContent: "center",
-              backgroundColor: !treeView ? "#D3D3D3" : "white",
+              backgroundColor: treeView === 'summary' ? "#D3D3D3" : "white",
             }}
             onPress={() => {
-              setTreeView(false);
+              setTreeView('summary');
             }}
           >
             <Text style={{ padding: 5 }}>Summary View</Text>
           </TouchableOpacity>
+          <View style={{ width: 5 }} />
+          <TouchableOpacity
+            style={{
+              height: 50,
+              width: "25%",
+              borderColor: "black",
+              borderRadius: 5,
+              borderWidth: 1,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: treeView === 'topological' ? "#D3D3D3" : "white",
+            }}
+            onPress={() => {
+              setTreeView('topological');
+            }}
+          >
+            <Text style={{ padding: 5 }}>Topological View</Text>
+          </TouchableOpacity>
         </View>
-        {treeView ? renderList() : renderSummaryView()}
+        { productionView }
         <View style={{ height: 50 }} />
       </View>
     );
