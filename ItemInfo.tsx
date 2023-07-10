@@ -100,7 +100,7 @@ export const allItems = [
     ingredientList: [{ name: "Copper Ore", amount: 1 }],
   },
   {
-    name: "Silicone",
+    name: "Silicon",
     itemsPerMin: 20,
     building: "Furnace",
     value: 2,
@@ -137,7 +137,7 @@ export const allItems = [
     value: 10,
     ingredientList: [
       { name: "Copper Wire", amount: 3 },
-      { name: "Silicone", amount: 2 },
+      { name: "Silicon", amount: 2 },
     ],
   },
   {
